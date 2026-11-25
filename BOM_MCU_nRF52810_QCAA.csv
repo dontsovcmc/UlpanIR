@@ -1,0 +1,12 @@
+Comment,Designator,Footprint,LCSC Part #,Source / note
+nRF52810-QCAA-R,U1,QFN-32-EP(5x5),C519278,"JLCPCB part page: Extended, PCBA Economic and Standard"
+32 MHz crystal CL=8pF,X1,SMD2016-4P,C5441424,"NDK NX2016SA-32MHZ-EXS00A-CS06654 (JLCPCB: 32MHz 8pF); Nordic spec: XTAL 2016, CL=8pF, total tol ±40ppm - verify NDK tolerance in datasheet"
+12pF NP0 ±2%,"C1,C2",0402,,"Nordic QCAA BOM (C1,C2,C11,C12 = 12pF NP0 ±2%) - find LCSC code"
+0.8pF NP0 ±5%,C3,0402,,"Nordic QCAA BOM - antenna match - find LCSC code"
+100nF X7R ±10%,"C4,C5,C8",0402,,"Nordic QCAA BOM - find LCSC code"
+Not mounted,C6,0402,,"Nordic QCAA BOM: N.C."
+100pF NP0 ±5%,C7,0402,,"Nordic QCAA BOM - find LCSC code"
+4.7uF X5R ±10%,C9,0603,,"Nordic QCAA BOM - find LCSC code"
+1.0uF X7R ±10%,C10,0603,,"Nordic QCAA BOM - find LCSC code"
+3.9nH HF chip inductor ±5%,L1,0402,,"Nordic QCAA BOM - antenna match - find LCSC code"
+32.768kHz crystal CL=9pF,X2,XTAL_3215,,"Nordic QCAA schematic marks 32.768kHz (and C11,C12) as Optional - not required; skipped unless firmware needs it"

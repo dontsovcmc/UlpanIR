@@ -1,0 +1,388 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1500 960" width="1500" height="960" font-family="DejaVu Sans, Arial, sans-serif">
+<rect width="100%" height="100%" fill="#fff"/>
+<text x="30" y="36" font-size="20" text-anchor="start" fill="#1d1d1f" font-weight="700">ИК-пульт на nRF52810 — принципиальная электрическая схема (v5: 2× VSMY14940, не проверена на макете)</text>
+<text x="30" y="58" font-size="12" text-anchor="start" fill="#777">Серым — имена цепей (одинаковые имена = соединены). Синим — номиналы-предложения; красным — ИК-излучение.</text>
+<rect x="30" y="80" width="640" height="410" rx="10" fill="none" stroke="#aaa" stroke-dasharray="6 5"/>
+<text x="44" y="102" font-size="15" text-anchor="start" fill="#1d1d1f" font-weight="700">A. Питание: батарея + «защёлка» (мягкий выключатель)</text>
+<polyline points="80,125 340,125" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<text x="86" y="119" font-size="12" text-anchor="start" fill="#777" font-weight="700">VBAT</text>
+<polyline points="80,125 80,160" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="65,160 95,160" fill="none" stroke="#1d1d1f" stroke-width="3" stroke-linejoin="round"/>
+<polyline points="72,168 88,168" fill="none" stroke="#1d1d1f" stroke-width="3" stroke-linejoin="round"/>
+<text x="100" y="164" font-size="13" text-anchor="start" fill="#1d1d1f" font-weight="700">BT1</text>
+<text x="100" y="179" font-size="12" text-anchor="start" fill="#1a5fb4">CR2032, 3 В</text>
+<text x="70" y="154" font-size="14" text-anchor="end" fill="#1d1d1f">+</text>
+<polyline points="80,168 80,215" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="80,215 80,223" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="68,223 92,223" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="73,228 87,228" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="77,233 83,233" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="210,125 210,150" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="197,150 223,150" fill="none" stroke="#1d1d1f" stroke-width="2.5" stroke-linejoin="round"/>
+<polyline points="197,158 223,158" fill="none" stroke="#1d1d1f" stroke-width="2.5" stroke-linejoin="round"/>
+<text x="204" y="152" font-size="13" text-anchor="start" fill="#1d1d1f" font-weight="700"></text>
+<text x="204" y="167" font-size="12" text-anchor="start" fill="#1a5fb4"></text>
+<text x="196" y="154" font-size="13" text-anchor="end" fill="#1d1d1f" font-weight="700">Cg</text>
+<text x="196" y="169" font-size="12" text-anchor="end" fill="#1a5fb4">100 нФ</text>
+<polyline points="210,158 210,185 260,185" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<text x="172" y="170" font-size="12" text-anchor="start" fill="#1d1d1f"></text>
+<polyline points="260,125 260,135" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<rect x="253" y="135" width="14" height="40" fill="#fff" stroke="#1d1d1f" stroke-width="2"/>
+<text x="274" y="153" font-size="13" text-anchor="start" fill="#1d1d1f" font-weight="700">R1</text>
+<text x="274" y="168" font-size="12" text-anchor="start" fill="#1a5fb4">470 кОм</text>
+<polyline points="260,175 260,185" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<circle cx="210" cy="125" r="3.6" fill="#1d1d1f"/>
+<circle cx="260" cy="125" r="3.6" fill="#1d1d1f"/>
+<polyline points="340,125 340,155" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="310,185 326,185" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="326,170 326,200" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="332,170 332,177" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="332,181 332,189" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="332,193 332,200" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="332,174 340,174 340,155" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="332,196 340,196 340,215" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="332,185 340,185" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="340,185 340,174" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<polygon points="338,185 332,181 332,189" fill="#1d1d1f"/>
+<polyline points="260,185 266,185" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<rect x="266" y="178" width="40" height="14" fill="#fff" stroke="#1d1d1f" stroke-width="2"/>
+<text x="286" y="173" font-size="12" text-anchor="middle" fill="#1d1d1f">Rg</text>
+<polyline points="306,185 310,185" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<circle cx="260" cy="185" r="3.6" fill="#1d1d1f"/>
+<circle cx="310" cy="185" r="3.6" fill="#1d1d1f"/>
+<polyline points="310,185 310,200" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="297,200 323,200" fill="none" stroke="#1d1d1f" stroke-width="2.5" stroke-linejoin="round"/>
+<polyline points="297,208 323,208" fill="none" stroke="#1d1d1f" stroke-width="2.5" stroke-linejoin="round"/>
+<text x="304" y="202" font-size="13" text-anchor="start" fill="#1d1d1f" font-weight="700"></text>
+<text x="304" y="217" font-size="12" text-anchor="start" fill="#1a5fb4"></text>
+<polyline points="310,208 310,224 340,224" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<circle cx="340" cy="224" r="3.6" fill="#1d1d1f"/>
+<text x="298" y="203" font-size="13" text-anchor="end" fill="#1d1d1f" font-weight="700">Cm</text>
+<text x="298" y="218" font-size="12" text-anchor="end" fill="#1a5fb4">33 нФ</text>
+<text x="356" y="172" font-size="13" text-anchor="start" fill="#1d1d1f" font-weight="700">Q1  P-FET</text>
+<text x="356" y="188" font-size="11" text-anchor="start" fill="#1a5fb4">логический уровень</text>
+<text x="356" y="202" font-size="11" text-anchor="start" fill="#1a5fb4">(исток=VBAT, сток=VDD)</text>
+<polyline points="340,215 340,232 600,232" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<text x="606" y="236" font-size="13" text-anchor="start" fill="#777" font-weight="700">VDD ▸</text>
+<polyline points="260,185 260,375" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<text x="236" y="200" font-size="13" text-anchor="end" fill="#777" font-weight="700">G1</text>
+<polyline points="260,262 300,262" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<circle cx="260" cy="262" r="3.6" fill="#1d1d1f"/>
+<polygon points="306,253 306,271 328,262" fill="#fff" stroke="#1d1d1f" stroke-width="2"/>
+<polyline points="328,253 328,271" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<text x="317" y="248" font-size="13" text-anchor="middle" fill="#1d1d1f" font-weight="700">D1</text>
+<polyline points="328,262 420,262" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<circle cx="420" cy="262" r="3.6" fill="#1d1d1f"/>
+<polyline points="420,262 420,270" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<circle cx="420" cy="273" r="3" fill="#fff" stroke="#1d1d1f" stroke-width="2"/>
+<polyline points="420,276 432,286" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<circle cx="420" cy="297" r="3" fill="#fff" stroke="#1d1d1f" stroke-width="2"/>
+<polyline points="420,300 420,308" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<text x="438" y="286" font-size="13" text-anchor="start" fill="#1d1d1f" font-weight="700">SW1</text>
+<polyline points="420,308 420,316" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="408,316 432,316" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="413,321 427,321" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="417,326 423,326" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="420,262 470,262" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<rect x="470" y="255" width="40" height="14" fill="#fff" stroke="#1d1d1f" stroke-width="2"/>
+<text x="490" y="250" font-size="12" text-anchor="middle" fill="#1d1d1f">Rs1  10 МОм</text>
+<polyline points="510,262 560,262" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<text x="566" y="266" font-size="13" text-anchor="start" fill="#777" font-weight="700">BTN1 ▸</text>
+<polyline points="260,340 300,340" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<circle cx="260" cy="340" r="3.6" fill="#1d1d1f"/>
+<polygon points="306,331 306,349 328,340" fill="#fff" stroke="#1d1d1f" stroke-width="2"/>
+<polyline points="328,331 328,349" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<text x="317" y="326" font-size="13" text-anchor="middle" fill="#1d1d1f" font-weight="700">D2</text>
+<polyline points="328,340 480,340" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<circle cx="480" cy="340" r="3.6" fill="#1d1d1f"/>
+<polyline points="480,340 480,348" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<circle cx="480" cy="351" r="3" fill="#fff" stroke="#1d1d1f" stroke-width="2"/>
+<polyline points="480,354 492,364" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<circle cx="480" cy="375" r="3" fill="#fff" stroke="#1d1d1f" stroke-width="2"/>
+<polyline points="480,378 480,386" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<text x="498" y="364" font-size="13" text-anchor="start" fill="#1d1d1f" font-weight="700">SW2</text>
+<polyline points="480,386 480,394" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="468,394 492,394" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="473,399 487,399" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="477,404 483,404" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="480,340 520,340" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<rect x="520" y="333" width="40" height="14" fill="#fff" stroke="#1d1d1f" stroke-width="2"/>
+<text x="540" y="328" font-size="12" text-anchor="middle" fill="#1d1d1f">Rs2  10 МОм</text>
+<polyline points="560,340 590,340" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<text x="596" y="344" font-size="13" text-anchor="start" fill="#777" font-weight="700">BTN2 ▸</text>
+<text x="300" y="366" font-size="11" text-anchor="start" fill="#1a5fb4">D1/D2: сдвоенный</text>
+<text x="300" y="380" font-size="11" text-anchor="start" fill="#1a5fb4">Шоттки, общий анод</text>
+<polyline points="260,365 260,395" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="230,425 246,425" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="246,410 246,440" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="252,410 252,417" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="252,421 252,429" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="252,433 252,440" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="252,414 260,414 260,395" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="252,436 260,436 260,455" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="252,425 260,425" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="260,425 260,436" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<polygon points="252,425 258,421 258,429" fill="#1d1d1f"/>
+<text x="278" y="418" font-size="13" text-anchor="start" fill="#1d1d1f" font-weight="700">Q2  N-FET</text>
+<polyline points="260,455 260,468" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="260,468 260,476" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="248,476 272,476" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="253,481 267,481" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="257,486 263,486" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="230,425 205,425" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<circle cx="205" cy="425" r="3.6" fill="#1d1d1f"/>
+<polyline points="130,425 150,425" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<rect x="150" y="418" width="40" height="14" fill="#fff" stroke="#1d1d1f" stroke-width="2"/>
+<text x="170" y="413" font-size="12" text-anchor="middle" fill="#1d1d1f">R2  100 кОм</text>
+<polyline points="190,425 205,425" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<text x="60" y="433" font-size="13" text-anchor="start" fill="#777" font-weight="700">HOLD</text>
+<text x="60" y="429" font-size="1" text-anchor="start" fill="#1d1d1f"></text>
+<polyline points="98,425 130,425" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="205,425 205,427" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<rect x="198" y="427" width="14" height="40" fill="#fff" stroke="#1d1d1f" stroke-width="2"/>
+<text x="219" y="445" font-size="13" text-anchor="start" fill="#1d1d1f" font-weight="700">R3</text>
+<text x="219" y="460" font-size="12" text-anchor="start" fill="#1a5fb4">1 МОм</text>
+<polyline points="205,467 205,470" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="205,470 205,478" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="193,478 217,478" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="198,483 212,483" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="202,488 208,488" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<text x="40" y="240" font-size="12" text-anchor="start" fill="#1d1d1f" font-weight="700">Как работает:</text>
+<text x="40" y="256" font-size="11" text-anchor="start" fill="#1d1d1f">1) нажали SW → G1 тянется вниз</text>
+<text x="40" y="270" font-size="11" text-anchor="start" fill="#1d1d1f">    через D → Q1 открывается → VDD</text>
+<text x="40" y="286" font-size="11" text-anchor="start" fill="#1d1d1f">2) МК стартует и ставит HOLD=1 →</text>
+<text x="40" y="300" font-size="11" text-anchor="start" fill="#1d1d1f">    Q2 держит G1 внизу (защёлка)</text>
+<text x="40" y="316" font-size="11" text-anchor="start" fill="#1d1d1f">3) МК читает BTN1/BTN2 (какая</text>
+<text x="40" y="330" font-size="11" text-anchor="start" fill="#1d1d1f">    кнопка), шлёт ИК-код</text>
+<text x="40" y="346" font-size="11" text-anchor="start" fill="#1d1d1f">4) HOLD=0 → R1 поднимает G1 →</text>
+<text x="40" y="360" font-size="11" text-anchor="start" fill="#1d1d1f">    Q1 закрыт, ток ≈ 0</text>
+<text x="40" y="380" font-size="11" text-anchor="start" fill="#1a5fb4">Cg на G1 держит Q1 открытым</text>
+<text x="40" y="394" font-size="11" text-anchor="start" fill="#1a5fb4">десятки мс, пока МК грузится</text>
+<text x="290" y="452" font-size="11" text-anchor="start" fill="#c01c28">Выключать (HOLD=0) только</text>
+<text x="290" y="466" font-size="11" text-anchor="start" fill="#c01c28">после отпускания кнопки</text>
+<rect x="690" y="80" width="520" height="490" rx="10" fill="none" stroke="#aaa" stroke-dasharray="6 5"/>
+<text x="704" y="102" font-size="15" text-anchor="start" fill="#1d1d1f" font-weight="700">B. Микроконтроллер, кварц, антенна, SWD</text>
+<rect x="780" y="170" width="190" height="320" fill="#fff" stroke="#1d1d1f" stroke-width="2.5"/>
+<text x="875" y="198" font-size="15" text-anchor="middle" fill="#1d1d1f" font-weight="700">U1  nRF52810</text>
+<text x="875" y="216" font-size="12" text-anchor="middle" fill="#1d1d1f">QFN32 5×5</text>
+<polyline points="750,240 780,240" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<text x="786" y="244" font-size="12" text-anchor="start" fill="#1d1d1f">VDD</text>
+<text x="744" y="244" font-size="12" text-anchor="end" fill="#777" font-weight="700">VDD</text>
+<polyline points="750,272 780,272" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<text x="786" y="276" font-size="12" text-anchor="start" fill="#1d1d1f">P0.x  HOLD</text>
+<text x="744" y="276" font-size="12" text-anchor="end" fill="#777" font-weight="700">HOLD</text>
+<polyline points="750,302 780,302" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<text x="786" y="306" font-size="12" text-anchor="start" fill="#1d1d1f">P0.x  BTN1</text>
+<text x="744" y="306" font-size="12" text-anchor="end" fill="#777" font-weight="700">BTN1</text>
+<polyline points="750,332 780,332" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<text x="786" y="336" font-size="12" text-anchor="start" fill="#1d1d1f">P0.x  BTN2</text>
+<text x="744" y="336" font-size="12" text-anchor="end" fill="#777" font-weight="700">BTN2</text>
+<polyline points="750,362 780,362" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<text x="786" y="366" font-size="12" text-anchor="start" fill="#1d1d1f">P0.x  PWM_IR</text>
+<text x="744" y="366" font-size="12" text-anchor="end" fill="#777" font-weight="700">PWM_IR</text>
+<polyline points="750,402 780,402" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<text x="786" y="406" font-size="12" text-anchor="start" fill="#1d1d1f">VSS (GND, EP)</text>
+<polyline points="750,402 750,410" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="738,410 762,410" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="743,415 757,415" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="747,420 753,420" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<text x="875" y="428" font-size="11" text-anchor="middle" fill="#1a5fb4">Блокировочные C, DEC-выводы,</text>
+<text x="875" y="442" font-size="11" text-anchor="middle" fill="#1a5fb4">DC/DC (по желанию):</text>
+<text x="875" y="456" font-size="11" text-anchor="middle" fill="#1a5fb4">копировать референс Nordic,</text>
+<text x="875" y="470" font-size="11" text-anchor="middle" fill="#1a5fb4">номиналы из его BOM</text>
+<polyline points="970,200 1000,200" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<text x="964" y="204" font-size="12" text-anchor="end" fill="#1d1d1f">XC1</text>
+<polyline points="970,240 1000,240" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<text x="964" y="244" font-size="12" text-anchor="end" fill="#1d1d1f">XC2</text>
+<polyline points="970,330 1000,330" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<text x="964" y="334" font-size="12" text-anchor="end" fill="#1d1d1f">ANT</text>
+<polyline points="970,370 1000,370" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<text x="964" y="374" font-size="12" text-anchor="end" fill="#1d1d1f">SWDIO</text>
+<polyline points="970,400 1000,400" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<text x="964" y="404" font-size="12" text-anchor="end" fill="#1d1d1f">SWDCLK</text>
+<polyline points="1000,200 1090,200 1090,210" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="1000,240 1090,240 1090,226" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="1078,210 1102,210" fill="none" stroke="#1d1d1f" stroke-width="3" stroke-linejoin="round"/>
+<rect x="1082" y="214" width="16" height="8" fill="#fff" stroke="#1d1d1f" stroke-width="2"/>
+<polyline points="1078,226 1102,226" fill="none" stroke="#1d1d1f" stroke-width="3" stroke-linejoin="round"/>
+<text x="1110" y="222" font-size="13" text-anchor="start" fill="#1d1d1f" font-weight="700">X1 32 МГц</text>
+<circle cx="1030" cy="200" r="3.6" fill="#1d1d1f"/>
+<polyline points="1030,200 1030,178" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="1017,170 1043,170" fill="none" stroke="#1d1d1f" stroke-width="2.5" stroke-linejoin="round"/>
+<polyline points="1017,178 1043,178" fill="none" stroke="#1d1d1f" stroke-width="2.5" stroke-linejoin="round"/>
+<text x="1044" y="172" font-size="13" text-anchor="start" fill="#1d1d1f" font-weight="700">Ca</text>
+<text x="1044" y="187" font-size="12" text-anchor="start" fill="#1a5fb4">12 пФ</text>
+<polyline points="1030,170 1030,160" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="1030,160 1030,152" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="1018,152 1042,152" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="1023,147 1037,147" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="1027,142 1033,142" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<circle cx="1030" cy="240" r="3.6" fill="#1d1d1f"/>
+<polyline points="1030,240 1030,262" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="1017,262 1043,262" fill="none" stroke="#1d1d1f" stroke-width="2.5" stroke-linejoin="round"/>
+<polyline points="1017,270 1043,270" fill="none" stroke="#1d1d1f" stroke-width="2.5" stroke-linejoin="round"/>
+<text x="1044" y="264" font-size="13" text-anchor="start" fill="#1d1d1f" font-weight="700">Cb</text>
+<text x="1044" y="279" font-size="12" text-anchor="start" fill="#1a5fb4">12 пФ</text>
+<polyline points="1030,270 1030,282" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="1030,282 1030,290" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="1018,290 1042,290" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="1023,295 1037,295" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="1027,300 1033,300" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="970,330 1000,330" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<rect x="1000" y="315" width="86" height="30" fill="#fff" stroke="#1d1d1f" stroke-width="1.8" stroke-dasharray="5 4"/>
+<text x="1043" y="334" font-size="11" text-anchor="middle" fill="#1a5fb4">согласование</text>
+<text x="1043" y="360" font-size="11" text-anchor="middle" fill="#1a5fb4">(по референсу)</text>
+<polyline points="1086,330 1110,330" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="1110,330 1110,312 1122,312 1122,348 1134,348 1134,312 1146,312 1146,348 1158,348 1158,312 1170,312" fill="none" stroke="#b5651d" stroke-width="2.5" stroke-linejoin="round"/>
+<text x="1100" y="296" font-size="12" text-anchor="start" fill="#1d1d1f" font-weight="700">ANT1: меандр</text>
+<text x="1100" y="310" font-size="12" text-anchor="start" fill="#1d1d1f" font-weight="700">на плате</text>
+<polyline points="970,370 1040,370" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<circle cx="1050" cy="370" r="8" fill="#e8c34a" stroke="#1d1d1f" stroke-width="1.5"/>
+<text x="1066" y="374" font-size="12" text-anchor="start" fill="#1d1d1f" font-weight="700">J1: SWDIO</text>
+<polyline points="970,400 1040,400" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<circle cx="1050" cy="400" r="8" fill="#e8c34a" stroke="#1d1d1f" stroke-width="1.5"/>
+<text x="1066" y="404" font-size="12" text-anchor="start" fill="#1d1d1f" font-weight="700">J1: SWDCLK</text>
+<circle cx="1050" cy="430" r="8" fill="#e8c34a" stroke="#1d1d1f" stroke-width="1.5"/>
+<text x="1066" y="434" font-size="12" text-anchor="start" fill="#1d1d1f" font-weight="700">J1: VBAT (бат. +)</text>
+<polyline points="1042,430 1020,430" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<text x="1016" y="434" font-size="12" text-anchor="end" fill="#777" font-weight="700">VBAT</text>
+<circle cx="1050" cy="460" r="8" fill="#e8c34a" stroke="#1d1d1f" stroke-width="1.5"/>
+<polyline points="1042,460 1020,460" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="1020,460 1020,468" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="1008,468 1032,468" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="1013,473 1027,473" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="1017,478 1023,478" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<text x="1066" y="464" font-size="12" text-anchor="start" fill="#1d1d1f" font-weight="700">J1: GND</text>
+<text x="704" y="520" font-size="11" text-anchor="start" fill="#c01c28">Прошивка: батарею снять, на J1 подать 3 В (VBAT+GND) и замкнуть SW1,</text>
+<text x="704" y="535" font-size="11" text-anchor="start" fill="#c01c28">чтобы Q1 открылся; SWD с ESP32 на SWDIO/SWDCLK. Напрямую на VDD</text>
+<text x="704" y="550" font-size="11" text-anchor="start" fill="#c01c28">(после Q1) питание не подавать — через диод Q1 зарядит батарею.</text>
+<rect x="30" y="510" width="640" height="420" rx="10" fill="none" stroke="#aaa" stroke-dasharray="6 5"/>
+<text x="44" y="532" font-size="15" text-anchor="start" fill="#1d1d1f" font-weight="700">C. ИК-каскад: 2× SMD side-looker VSMY14940, LED2 за JP1, NEC</text>
+<text x="60" y="604" font-size="13" text-anchor="start" fill="#777" font-weight="700">VDD</text>
+<polyline points="100,600 160,600" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="160,600 470,600" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<circle cx="470" cy="600" r="3.6" fill="#1d1d1f"/>
+<polyline points="470,600 470,640" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="457,640 483,640" fill="none" stroke="#1d1d1f" stroke-width="2.5" stroke-linejoin="round"/>
+<polyline points="457,648 483,648" fill="none" stroke="#1d1d1f" stroke-width="2.5" stroke-linejoin="round"/>
+<text x="484" y="642" font-size="13" text-anchor="start" fill="#1d1d1f" font-weight="700">Cvdd</text>
+<text x="484" y="657" font-size="12" text-anchor="start" fill="#1a5fb4">22 мкФ X5R</text>
+<polyline points="470,648 470,668" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="470,668 470,676" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="458,676 482,676" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="463,681 477,681" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="467,686 473,686" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="470,600 580,600" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<circle cx="580" cy="600" r="3.6" fill="#1d1d1f"/>
+<text x="430" y="586" font-size="12" text-anchor="start" fill="#777" font-weight="700">VIR</text>
+<polyline points="580,600 580,620" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<rect x="573" y="620" width="14" height="40" fill="#fff" stroke="#1d1d1f" stroke-width="2"/>
+<text x="594" y="638" font-size="13" text-anchor="start" fill="#1d1d1f" font-weight="700">RL</text>
+<text x="594" y="653" font-size="12" text-anchor="start" fill="#1a5fb4">30 Ом</text>
+<polyline points="580,660 580,690" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<polygon points="570,690 590,690 580,710" fill="#fff" stroke="#1d1d1f" stroke-width="2"/>
+<polyline points="570,710 590,710" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="594,712 608,698" fill="none" stroke="#c01c28" stroke-width="1.8" stroke-linejoin="round"/>
+<polygon points="608,698 601,699 607,705" fill="#c01c28"/>
+<polyline points="594,702 608,688" fill="none" stroke="#c01c28" stroke-width="1.8" stroke-linejoin="round"/>
+<polygon points="608,688 601,689 607,695" fill="#c01c28"/>
+<text x="616" y="720" font-size="13" text-anchor="start" fill="#1d1d1f" font-weight="700"></text>
+<text x="566" y="706" font-size="12" text-anchor="end" fill="#1d1d1f" font-weight="700">LED1</text>
+<polyline points="580,710 580,790" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<circle cx="580" cy="790" r="3.6" fill="#1d1d1f"/>
+<text x="566" y="722" font-size="11" text-anchor="end" fill="#1a5fb4">SMD side-looker</text>
+<text x="566" y="736" font-size="11" text-anchor="end" fill="#1a5fb4">VSMY14940</text>
+<polyline points="580,600 640,600 640,606" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<circle cx="640" cy="606" r="3.6" fill="#1d1d1f"/>
+<circle cx="640" cy="622" r="3.6" fill="#1d1d1f"/>
+<polyline points="631,610 649,618" fill="none" stroke="#c01c28" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="640,622 640,636" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<text x="652" y="616" font-size="12" text-anchor="start" fill="#1d1d1f" font-weight="700">JP1</text>
+<rect x="633" y="636" width="14" height="40" fill="#fff" stroke="#1d1d1f" stroke-width="2"/>
+<text x="654" y="654" font-size="13" text-anchor="start" fill="#1d1d1f" font-weight="700">RL2</text>
+<text x="654" y="669" font-size="12" text-anchor="start" fill="#1a5fb4">30 Ом</text>
+<polyline points="640,676 640,700" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<polygon points="630,700 650,700 640,720" fill="#fff" stroke="#1d1d1f" stroke-width="2"/>
+<polyline points="630,720 650,720" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="654,722 668,708" fill="none" stroke="#c01c28" stroke-width="1.8" stroke-linejoin="round"/>
+<polygon points="668,708 661,709 667,715" fill="#c01c28"/>
+<polyline points="654,712 668,698" fill="none" stroke="#c01c28" stroke-width="1.8" stroke-linejoin="round"/>
+<polygon points="668,698 661,699 667,705" fill="#c01c28"/>
+<text x="676" y="730" font-size="13" text-anchor="start" fill="#1d1d1f" font-weight="700"></text>
+<polyline points="640,720 640,790 580,790" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<text x="662" y="725" font-size="12" text-anchor="start" fill="#1d1d1f" font-weight="700">LED2</text>
+<text x="566" y="750" font-size="11" text-anchor="end" fill="#c01c28">LED2 впаян, JP1 разомкнут</text>
+<polyline points="550,820 566,820" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="566,805 566,835" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="572,805 572,812" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="572,816 572,824" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="572,828 572,835" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="572,809 580,809 580,790" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="572,831 580,831 580,850" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="572,820 580,820" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="580,820 580,831" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<polygon points="572,820 578,816 578,824" fill="#1d1d1f"/>
+<text x="598" y="806" font-size="13" text-anchor="start" fill="#1d1d1f" font-weight="700">Q3  N-FET</text>
+<text x="598" y="821" font-size="11" text-anchor="start" fill="#1a5fb4">лог. ур., 1,8 В</text>
+<polyline points="580,850 580,872" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="580,872 580,880" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="568,880 592,880" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="573,885 587,885" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="577,890 583,890" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="550,820 520,820" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<circle cx="520" cy="820" r="3.6" fill="#1d1d1f"/>
+<polyline points="520,820 480,820" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<text x="474" y="824" font-size="12" text-anchor="end" fill="#777" font-weight="700">PWM_IR</text>
+<polyline points="520,820 520,835" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<rect x="513" y="835" width="14" height="40" fill="#fff" stroke="#1d1d1f" stroke-width="2"/>
+<text x="534" y="853" font-size="13" text-anchor="start" fill="#1d1d1f" font-weight="700">R4</text>
+<text x="534" y="868" font-size="12" text-anchor="start" fill="#1a5fb4">100к</text>
+<polyline points="520,875 520,885" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="520,885 520,893" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="508,893 532,893" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="513,898 527,898" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="517,903 523,903" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linejoin="round"/>
+<text x="44" y="560" font-size="11" text-anchor="start" fill="#1a5fb4">Cvdd (на VDD после Q1) сглаживает пульсации 38 кГц;</text>
+<text x="44" y="575" font-size="11" text-anchor="start" fill="#1a5fb4">Rg+Cm у Q1 ограничивают бросок заряда Cvdd (≈20 мА).</text>
+<text x="44" y="590" font-size="11" text-anchor="start" fill="#c01c28">LED2: цепь разорвана JP1; замкнул → оба, ток ≈×1,7–2.</text>
+<rect x="1230" y="80" width="250" height="850" rx="10" fill="#f6f6f2" stroke="#aaa"/>
+<text x="1244" y="104" font-size="14" text-anchor="start" fill="#1d1d1f" font-weight="700">Оценки по току (не замер)</text>
+<text x="1244" y="130" font-size="12" text-anchor="start" fill="#1d1d1f" font-weight="700">JP1 разомкнут: 1 LED. Замкнут:</text>
+<text x="1244" y="150" font-size="12" text-anchor="start" fill="#1d1d1f">оба LED, RL=30 Ом у каждого.</text>
+<text x="1244" y="170" font-size="12" text-anchor="start" fill="#1d1d1f">Свежая 3,3 В: LED 56 мА каждый,</text>
+<text x="1244" y="190" font-size="12" text-anchor="start" fill="#1d1d1f">из батареи среднее ≈40 мА,</text>
+<text x="1244" y="210" font-size="12" text-anchor="start" fill="#1d1d1f">пик ≈44 мА (>30 мА — риск</text>
+<text x="1244" y="230" font-size="12" text-anchor="start" fill="#1d1d1f">принят). 3,0 В/20 Ом: ≈29 мА.</text>
+<text x="1244" y="250" font-size="12" text-anchor="start" fill="#1d1d1f">2,6 В/60 Ом: ≈14 мА, но Vmin</text>
+<text x="1244" y="270" font-size="12" text-anchor="start" fill="#1d1d1f">на МК ≈1,72 В (порог 1,7 В!).</text>
+<text x="1244" y="290" font-size="12" text-anchor="start" fill="#1d1d1f"></text>
+<text x="1244" y="310" font-size="12" text-anchor="start" fill="#1d1d1f" font-weight="700">Расчёт (модель, не замер):</text>
+<text x="1244" y="330" font-size="12" text-anchor="start" fill="#1d1d1f">Один LED (JP1 разомкнут),</text>
+<text x="1244" y="350" font-size="12" text-anchor="start" fill="#1d1d1f" font-weight="700">RL=30, Cvdd≈10 мкФ эфф.:</text>
+<text x="1244" y="370" font-size="12" text-anchor="start" fill="#1d1d1f">3,3 В/8 Ом: LED ≈60 мА,</text>
+<text x="1244" y="390" font-size="12" text-anchor="start" fill="#1d1d1f">из батареи ≈23 мА (пик 25).</text>
+<text x="1244" y="410" font-size="12" text-anchor="start" fill="#1d1d1f">3,0 В/20 Ом: 45 мА, 18 мА.</text>
+<text x="1244" y="430" font-size="12" text-anchor="start" fill="#1d1d1f">2,6 В/60 Ом: 24 мА, Vmin ≈1,9 В.</text>
+<text x="1244" y="450" font-size="12" text-anchor="start" fill="#1d1d1f"></text>
+<text x="1244" y="470" font-size="12" text-anchor="start" fill="#1d1d1f">NEC: несущая 27,6 мс из</text>
+<text x="1244" y="490" font-size="12" text-anchor="start" fill="#1d1d1f">кадра 68 мс. 3 кадра/с →</text>
+<text x="1244" y="510" font-size="12" text-anchor="start" fill="#1d1d1f">средний ток при удержании</text>
+<text x="1244" y="530" font-size="12" text-anchor="start" fill="#1d1d1f">≈2 мА; ≈0,2–0,26 мкА·ч</text>
+<text x="1244" y="550" font-size="12" text-anchor="start" fill="#1d1d1f">на кадр.</text>
+<text x="1244" y="570" font-size="12" text-anchor="start" fill="#1d1d1f"></text>
+<text x="1244" y="590" font-size="12" text-anchor="start" fill="#1d1d1f">Старт: Rg 100к + Cm 33 нФ →</text>
+<text x="1244" y="610" font-size="12" text-anchor="start" fill="#1d1d1f">бросок ≤30 мА (23–29 мА),</text>
+<text x="1244" y="630" font-size="12" text-anchor="start" fill="#1d1d1f">нарастание 7–10 мс. Без них</text>
+<text x="1244" y="650" font-size="12" text-anchor="start" fill="#1d1d1f">150–410 мА. Rg=220к даёт</text>
+<text x="1244" y="670" font-size="12" text-anchor="start" fill="#1d1d1f">≈17–21 мА, но ~10–15 мс.</text>
+<text x="1244" y="690" font-size="12" text-anchor="start" fill="#1d1d1f"></text>
+<text x="1244" y="710" font-size="12" text-anchor="start" fill="#1d1d1f">Протокол: NEC, адрес Optoma</text>
+<text x="1244" y="730" font-size="12" text-anchor="start" fill="#1d1d1f">0x32 (32 CD); On = 02 FD,</text>
+<text x="1244" y="750" font-size="12" text-anchor="start" fill="#1d1d1f">Off = 2E D1 — для других</text>
+<text x="1244" y="770" font-size="12" text-anchor="start" fill="#1d1d1f">моделей; X341 не проверена.</text>
+<text x="1244" y="790" font-size="12" text-anchor="start" fill="#1d1d1f"></text>
+<text x="1244" y="810" font-size="12" text-anchor="start" fill="#1d1d1f" font-weight="700">Открытое:</text>
+<text x="1244" y="830" font-size="12" text-anchor="start" fill="#1d1d1f">– Vgs(th) Q1/Q2/Q3 при 2 В;</text>
+<text x="1244" y="850" font-size="12" text-anchor="start" fill="#1d1d1f">– реальная ёмкость Cvdd;</text>
+<text x="1244" y="870" font-size="12" text-anchor="start" fill="#1d1d1f">– задержка старта МК vs Cg.</text>
+</svg>
