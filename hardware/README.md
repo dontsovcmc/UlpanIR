@@ -1,6 +1,6 @@
 # UlpanIR — схема и детали (CH592F)
 
-Дата: 25.11.2026. Основа: даташит CH592 V1.7 (английский), эталонные схемы
+Дата: 25.11.2026. Основа: даташит CH592 V1.7 (английский), эталонные схемы (даташиты всех деталей — `docs/parts/README.md`),
 `docs/ref_WeAct_CH592F_CoreBoard_sch.pdf` (WeAct, отладочная плата) и
 `docs/ref_WCH_CH592F_mouse_sch.pdf` (WCH, мышь CH592F). Коды деталей сверены по базе JLCPCB
 (через jlcsearch) 25.11.2026. Пометка «гипотеза» — не проверено.
@@ -55,8 +55,8 @@
 
 ### 2.1 Замена ИК-светодиода — Amicc A-SP158IR1C-A02-2D (C5179598)
 
-Сверено по даташитам 25.11.2026 (`docs/parts/VSMY14940_datasheet.pdf`, Rev. 1.4;
-`docs/parts/A-SP158IR1C-A02-2D_datasheet.pdf`, V4).
+Сверено по даташитам 25.11.2026 (`docs/parts/VSMY14940_Vishay_C511069.pdf`, Rev. 1.4;
+`docs/parts/A-SP158IR1C-A02-2D_Amicc_C5179598.pdf`, V4).
 
 | | VSMY14940 (Vishay) | A-SP158IR1C-A02-2D (Amicc) |
 |---|---|---|
