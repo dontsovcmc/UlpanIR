@@ -7,7 +7,8 @@
 |---|---|---|---|
 | U1 | WCH CH592F, английский V1.7 | C39831287 | `CH592_CH591_datasheet_V1.7_EN.pdf` |
 | U1 | WCH CH592F, китайский V1.8 (новее английского) | C39831287 | `CH592_CH591_datasheet_V1.8_CN_C39831287.pdf` |
-| X1 | кварц 32 МГц TAITIEN XYDCELNANF-32M | C124330 | `XYDCELNANF-32M_crystal_32MHz_C124330.pdf` |
+| X1 | кварц 32 МГц SOSET S201632M10PF10PPM, 2016, 10 пФ, ±10 ppm (с 25.11.2026) | C7420782 | даташит не скачан: LCSC отдал 405 — взять со страницы детали вручную |
+| X1 (прежний) | кварц 32 МГц TAITIEN XYDCELNANF-32M | C124330 | `XYDCELNANF-32M_crystal_32MHz_C124330.pdf` |
 | Q1 | IRLML6401TRPBF-JSM (JSMSEMI) | C2874694 | `IRLML6401TRPBF-JSM_JSMSEMI_C2874694.pdf` |
 | Q2, Q3 | IRLML6344TRPBF (Infineon) | C53550 | `IRLML6344TRPBF_Infineon_C53550.pdf` |
 | LED1, LED2 | VSMY14940 (Vishay) | C511069 | `VSMY14940_Vishay_C511069.pdf`, фото `VSMY14940_photo.png` |
