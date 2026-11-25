@@ -2,7 +2,7 @@
 
 ## Context
 
-Схема защёлки — `schematic.png` (v5), расчёты — README, раздел 7 (параметры FET — допущения). Режим настройки и ИК готовы в первых двух задачах. Требования — `specs/power-management/spec.md`.
+Исходная схема защёлки — `docs/source_package_v5_nrf/schematic.png` (v5), расчёты — `docs/source_package_v5_nrf/README.md`, раздел 7 (параметры FET — допущения). Режим настройки и ИК готовы в первых двух задачах. Требования — `specs/power-management/spec.md`.
 
 ## Goals / Non-Goals
 

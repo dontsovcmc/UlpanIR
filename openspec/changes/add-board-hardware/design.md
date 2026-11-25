@@ -2,7 +2,7 @@
 
 ## Context
 
-МК — WCH CH592F (JLCPCB C39831287), решение владельца 25.11.2026 вместо nRF52810. Обвязка — по эталонной схеме WCH (мышь CH592F-3MODE-MS в `openwch/ch592`, `Application/8K_PollingRateWirelessMouse/hardware/`) и даташиту CH592 V1.7. `BOM_MCU_nRF52810_QCAA.csv` в корне — исторический. Номиналы питания — из `add-power-latch`. Требования — `specs/board-hardware/spec.md`.
+МК — WCH CH592F (JLCPCB C39831287), решение владельца 25.11.2026 вместо nRF52810. Обвязка — по эталонной схеме WCH (мышь CH592F-3MODE-MS в `openwch/ch592`, `Application/8K_PollingRateWirelessMouse/hardware/`) и даташиту CH592 V1.7. `docs/source_package_v5_nrf/BOM_MCU_nRF52810_QCAA.csv` — исторический. Номиналы питания — из `add-power-latch`. Требования — `specs/board-hardware/spec.md`.
 
 ## Goals / Non-Goals
 
