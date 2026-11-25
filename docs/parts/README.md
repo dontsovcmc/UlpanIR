@@ -11,7 +11,7 @@
 | Q1 | IRLML6401TRPBF-JSM (JSMSEMI) | C2874694 | `IRLML6401TRPBF-JSM_JSMSEMI_C2874694.pdf` |
 | Q2, Q3 | IRLML6344TRPBF (Infineon) | C53550 | `IRLML6344TRPBF_Infineon_C53550.pdf` |
 | LED1, LED2 | VSMY14940 (Vishay) | C511069 | `VSMY14940_Vishay_C511069.pdf`, фото `VSMY14940_photo.png` |
-| LED1, LED2 — замена | A-SP158IR1C-A02-2D (Amicc) | C5179598 | `A-SP158IR1C-A02-2D_Amicc_C5179598.pdf`; общее посадочное место — `ir_led_footprint.png` |
+| LED1, LED2 — замена | A-SP158IR1C-A02-2D (Amicc) | C5179598 | `A-SP158IR1C-A02-2D_Amicc_C5179598.pdf`; на площадках Vishay — `ir_led_footprint.png` |
 | D1, D2 | 1N4148WS (JSCJ) | C2128 | `1N4148WS_JSCJ_C2128.pdf` |
 | D3, D4 | RB520S30 (Nexperia) | C96237 | `RB520S30_Nexperia_C96237.pdf` |
 | LED3 | KT-0603R красный (KENTO) | C2286 | `KT-0603R_red_LED_C2286.pdf` |

@@ -1,11 +1,11 @@
-"""Общее посадочное место ИК-светодиода: VSMY14940 и Amicc A-SP158IR1C-A02-2D (вид сверху на плату).
+"""Площадки VSMY14940 по даташиту Vishay и на них — Vishay и Amicc A-SP158IR1C-A02-2D (вид сверху на плату).
 Размеры — даташиты в docs/parts/. Ось X — вдоль корпуса, Y — к линзе (наружу, к торцу платы)."""
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle
 
-PAD_W, PAD_D, GAP = 1.6, 1.5, 1.8            # общая площадка
+PAD_W, PAD_D, GAP = 1.5, 1.5, 2.0            # площадка Vishay (рекомендованная)
 fig, axs = plt.subplots(1, 2, figsize=(11, 4.6))
 for ax, name, L, term, rec in [
     (axs[0], "VSMY14940 (Vishay)", 3.2, 0.6, (1.5, 1.5, 2.0)),
@@ -27,7 +27,7 @@ for ax, name, L, term, rec in [
     ax.set_title(name)
     ax.set_xlim(-3, 3); ax.set_ylim(-1.5, 1.8); ax.set_aspect("equal"); ax.grid(alpha=0.3)
     ax.set_xlabel("мм")
-fig.text(0.5, 0.01, "оранжевое — общая площадка 1,6 × 1,5 мм, зазор 1,8, длина 5,0\nпунктир — рекомендованная площадка детали;"
+fig.text(0.5, 0.01, "оранжевое — площадка Vishay 1,5 × 1,5 мм, зазор 2,0, длина 5,0\nпунктир — рекомендованная площадка детали;"
          "  серое — выводы; рамка — корпус (глубина корпуса без линзы — условно 1,0 мм)", ha="center", fontsize=9)
 plt.tight_layout(rect=(0, 0.08, 1, 1))
 plt.savefig(__file__.replace(".py", ".png"), dpi=130)
