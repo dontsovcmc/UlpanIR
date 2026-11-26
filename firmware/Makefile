@@ -1,6 +1,7 @@
 # Target build for WCH CH592F with xPack riscv-none-elf-gcc (no MounRiver Studio).
 #   make                      -> build/ulpanir/remote.{elf,hex,bin}
 #   make BOARD=weact APP=blink
+#   make TEST_CODES=1          -> clean chip uses test codes 0x32/0x02, 0x32/0x03 (IR checks before BLE)
 #   make test                 -> host unit tests (no hardware)
 #   make flash-isp            -> USB bootloader (wchisp), board held in BOOT
 #   make flash-link           -> WCH-LinkE over SWD (wlink)
@@ -9,25 +10,26 @@ WCHISP    ?= $(HOME)/tools/bin/wchisp-macos-arm64/wchisp
 WLINK     ?= $(HOME)/tools/bin/wlink-macos-arm64/wlink
 BOARD     ?= ulpanir
 APP       ?= remote
+TEST_CODES ?= 0
 
 CC      = $(TOOLCHAIN)gcc
 OBJCOPY = $(TOOLCHAIN)objcopy
 SIZE    = $(TOOLCHAIN)size
 
 SDK = vendor/ch592
-BUILD = build/$(BOARD)
+BUILD = build/$(BOARD)$(if $(filter 1,$(TEST_CODES)),-testcodes)
 BOARD_DEF = $(if $(filter ulpanir,$(BOARD)),BOARD_ULPANIR,$(if $(filter weact,$(BOARD)),BOARD_WEACT,$(error BOARD must be ulpanir or weact)))
 
 ARCH    = -march=rv32imac_zicsr_zifencei -mabi=ilp32 -mcmodel=medany -msmall-data-limit=8 -mno-save-restore
 CFLAGS  = $(ARCH) -Os -std=gnu11 -Wall -Wextra -Wno-unused-parameter -ffunction-sections -fdata-sections -fno-common \
-          -D$(BOARD_DEF) -DINT_SOFT -Isrc -I$(SDK)/StdPeriphDriver/inc -I$(SDK)/RVMSIS
+          -D$(BOARD_DEF) -DTEST_CODES=$(TEST_CODES) -DINT_SOFT -Isrc -I$(SDK)/StdPeriphDriver/inc -I$(SDK)/RVMSIS
 SDKFLAGS = $(ARCH) -Os -std=gnu11 -w -ffunction-sections -fdata-sections -fno-common -DINT_SOFT \
           -I$(SDK)/StdPeriphDriver/inc -I$(SDK)/RVMSIS
 LDFLAGS = $(ARCH) -T $(SDK)/Ld/Link.ld -nostartfiles -Wl,--gc-sections -Wl,-Map=$(BUILD)/$(APP).map \
           --specs=nano.specs --specs=nosys.specs -L$(SDK)/StdPeriphDriver -lISP592
 
 ifeq ($(APP),remote)
-APP_SRC = src/main.c src/nec.c src/remote.c src/ir_timing.c src/ir_tx.c
+APP_SRC = src/main.c src/nec.c src/remote.c src/ir_timing.c src/ir_tx.c src/settings.c src/settings_store.c src/dispatch.c
 else ifeq ($(APP),blink)
 APP_SRC = src/blink.c
 else

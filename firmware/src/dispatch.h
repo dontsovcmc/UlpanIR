@@ -1,0 +1,23 @@
+/* What to output for a button action given the stored settings (add-remote-config).
+ * Pure logic: the caller sends the frame, the repeat code or the "not assigned" blink. */
+#ifndef DISPATCH_H
+#define DISPATCH_H
+#include "remote.h"
+#include "settings.h"
+
+typedef enum { OUT_NONE = 0, OUT_FRAME, OUT_REPEAT, OUT_UNASSIGNED } out_kind_t;
+typedef struct {
+    out_kind_t kind;
+    button_code_t code; /* valid for OUT_FRAME */
+} out_t;
+
+typedef struct {
+    bool unassigned_shown; /* the "not assigned" blink was already given for this press */
+} dispatch_t;
+
+/* Repeat period for repeat_hz frames per second, rounded to the nearest ms. */
+uint16_t dispatch_period_ms(uint8_t repeat_hz);
+void dispatch_reset(dispatch_t *d);
+void dispatch_released(dispatch_t *d); /* call when no button is active any more */
+out_t dispatch_action(dispatch_t *d, const settings_t *s, action_t a);
+#endif
