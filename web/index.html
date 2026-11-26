@@ -114,7 +114,7 @@
 
 <script type="module">
 import {
-  UUID, ERR, TIMERS, Session, defaults, validate, encodeBlock, decodeBlock, decodeStatus, testPayload, necBytes,
+  UUID, TIMERS, Session, defaults, validate, encodeBlock, decodeBlock, decodeStatus, testPayload, necBytes,
   hex, parseHex, errorText,
 } from './protocol.js';
 
@@ -171,16 +171,6 @@ function fillForm(s) {
   preview();
 }
 
-function formError(s) {
-  for (const k of ['a', 'b']) {
-    const c = s[k];
-    if (c.assigned && (Number.isNaN(c.address) || Number.isNaN(c.command)))
-      return `Кнопка ${k.toUpperCase()}: адрес и команда — шестнадцатеричные числа, например 0x32`;
-  }
-  const code = validate(s);
-  return code === ERR.OK ? null : errorText(code);
-}
-
 // 4.3 preview of the block and of the NEC data bytes
 function preview() {
   const s = readForm();
@@ -190,7 +180,7 @@ function preview() {
       c.address <= (c.extended ? 0xffff : 0xff) && c.command <= 0xff;
     p.textContent = !c.assigned ? 'не назначена — пульт не излучает' : valid ? 'кадр NEC: ' + hex(necBytes(c)) : '—';
   }
-  const err = formError(s);
+  const err = validate(s);
   $('#block').textContent = err ? err : hex(encodeBlock(s));
 }
 form.addEventListener('input', preview);
@@ -211,9 +201,9 @@ function setConnected(on) {
 }
 
 function deviceError(e) {
-  // Hypothesis: Chrome does not pass the ATT application error code (0x80–0x9F) to the page, so the form is
+  // Hypothesis: Chrome does not pass the ATT application error code (0x80/0x81) to the page, so the form is
   // validated before sending; a code is shown only if the browser's message contains it.
-  const m = /0x([89][0-9a-f])/i.exec(e?.message ?? '');
+  const m = /0x(8[01])/i.exec(e?.message ?? '');
   return m ? errorText(parseInt(m[1], 16)) : `Пульт отклонил операцию (${e?.message ?? e})`;
 }
 
@@ -252,7 +242,7 @@ $('#read').addEventListener('click', async () => {
 
 form.addEventListener('submit', async (ev) => {
   ev.preventDefault();
-  const s = readForm(), err = formError(s);
+  const s = readForm(), err = validate(s);
   if (err) { msg(err, 'err'); return; } // spec: the page does not send an invalid value
   try {
     await gatt(() => ch.config.writeValueWithResponse(encodeBlock(s)));
@@ -262,9 +252,9 @@ form.addEventListener('submit', async (ev) => {
 
 // 4.5 test frame with the code from the form, saved or not
 form.querySelectorAll('[data-test]').forEach((b) => b.addEventListener('click', async () => {
-  const button = Number(b.dataset.test), s = readForm(), err = formError(s);
+  const button = Number(b.dataset.test), s = readForm(), err = validate(s);
   if (err) { msg(err, 'err'); return; }
-  if (!s[button ? 'b' : 'a'].assigned) { msg(errorText(ERR.NOT_ASSIGNED), 'err'); return; }
+  if (!s[button ? 'b' : 'a'].assigned) { msg('Кнопке не назначен код', 'err'); return; }
   try {
     await gatt(() => ch.test.writeValueWithResponse(testPayload(button, s)));
     msg(`Код ${button ? 'B' : 'A'} отправлен`, 'ok');

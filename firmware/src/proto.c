@@ -35,15 +35,15 @@ void proto_status(uint16_t battery_mv, uint8_t out[PROTO_STATUS_LEN]) {
 int proto_test_write(const uint8_t *buf, size_t len, const settings_t *work, button_code_t *code) {
     settings_t passed;
     const settings_t *src = work;
-    if (len != 1 && len != 1 + SETTINGS_BLOCK_LEN) return SETTINGS_ERR_LENGTH;
+    if (len != 1 && len != 1 + SETTINGS_BLOCK_LEN) return SETTINGS_ERR_INVALID;
     if (len == 1 + SETTINGS_BLOCK_LEN) {
         int err = settings_parse(buf + 1, SETTINGS_BLOCK_LEN, &passed);
         if (err != SETTINGS_OK) return err;
         src = &passed;
     }
-    if (buf[0] > 1) return SETTINGS_ERR_BUTTON;
+    if (buf[0] > 1) return SETTINGS_ERR_INVALID;
     const button_code_t *c = buf[0] == 0 ? &src->a : &src->b;
-    if (!c->assigned) return SETTINGS_ERR_NOT_ASSIGNED;
+    if (!c->assigned) return SETTINGS_ERR_INVALID;
     *code = *c;
     return SETTINGS_OK;
 }

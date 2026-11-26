@@ -2,7 +2,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  UUID, ERR, defaults, validate, encodeBlock, decodeBlock, decodeStatus, testPayload, necBytes, hex, parseHex,
+  UUID, DEVICE_ERR, defaults, validate, encodeBlock, decodeBlock, decodeStatus, testPayload, necBytes, hex, parseHex,
   errorText, Session,
 } from '../protocol.js';
 
@@ -48,32 +48,41 @@ test('decode: wrong version or length is rejected', () => {
 test('validate: spec scenario, 50 frames/s is not sent', () => {
   const s = exampleSettings();
   s.repeatHz = 50;
-  assert.equal(validate(s), ERR.REPEAT_HZ);
-  assert.equal(errorText(ERR.REPEAT_HZ), 'Частота повторов — от 1 до 10 кадров/с');
+  assert.equal(validate(s), 'Частота повторов — от 1 до 10 кадров/с');
 });
 
 test('validate: ranges', () => {
   const s = exampleSettings();
-  assert.equal(validate(s), ERR.OK);
+  assert.equal(validate(s), null);
   s.repeatHz = 0;
-  assert.equal(validate(s), ERR.REPEAT_HZ);
+  assert.match(validate(s), /Частота/);
   s.repeatHz = 10;
-  assert.equal(validate(s), ERR.OK);
+  assert.equal(validate(s), null);
   s.a.address = 0x132; // 8-bit address too large
-  assert.equal(validate(s), ERR.ADDRESS);
+  assert.match(validate(s), /Кнопка A: адрес больше 0xFF/);
   s.a.extended = true;
-  assert.equal(validate(s), ERR.OK);
+  assert.equal(validate(s), null);
   s.a.command = 0x100;
-  assert.equal(validate(s), ERR.ADDRESS);
+  assert.match(validate(s), /Кнопка A: команда/);
   s.a.command = 0x10;
+  s.b.address = NaN; // not a hex number in the form
+  assert.match(validate(s), /Кнопка B: адрес и команда — шестнадцатеричные/);
+  s.b.address = 0x32;
   s.repeatMode = 2;
-  assert.equal(validate(s), ERR.REPEAT_MODE);
+  assert.match(validate(s), /Вид повтора/);
 });
 
 test('validate: unassigned button fields are not checked', () => {
   const s = exampleSettings();
   s.b = { assigned: false, extended: false, address: NaN, command: NaN };
-  assert.equal(validate(s), ERR.OK);
+  assert.equal(validate(s), null);
+});
+
+test('device errors: two codes', () => {
+  assert.equal(DEVICE_ERR.INVALID, 0x80);
+  assert.equal(DEVICE_ERR.FLASH, 0x81);
+  assert.match(errorText(0x80), /отклонил/);
+  assert.match(errorText(0x81), /флеш/);
 });
 
 test('status: version and battery volts', () => {

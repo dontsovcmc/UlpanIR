@@ -50,7 +50,7 @@ static void test_config_write_invalid_keeps_settings(void) {
     memcpy(b, EXAMPLE, sizeof(b));
     b[9] = 50; /* spec: 50 frames/s is rejected */
     save_calls = 0;
-    CHECK(proto_config_write(b, sizeof(b), &work, fake_save) == SETTINGS_ERR_REPEAT_HZ);
+    CHECK(proto_config_write(b, sizeof(b), &work, fake_save) == SETTINGS_ERR_INVALID);
     CHECK(save_calls == 0 && memcmp(&work, &before, sizeof(work)) == 0);
 }
 
@@ -85,7 +85,7 @@ static void test_test_write(void) {
     button_code_t code;
     /* 1 byte: current working settings -> A not assigned */
     uint8_t one[1] = {0};
-    CHECK(proto_test_write(one, 1, &work, &code) == SETTINGS_ERR_NOT_ASSIGNED);
+    CHECK(proto_test_write(one, 1, &work, &code) == SETTINGS_ERR_INVALID);
     /* 12 bytes: code from the page's unsaved block */
     uint8_t twelve[12];
     twelve[0] = 1;
@@ -95,11 +95,11 @@ static void test_test_write(void) {
     CHECK(!work.a.assigned); /* nothing stored */
     /* errors */
     twelve[0] = 2;
-    CHECK(proto_test_write(twelve, 12, &work, &code) == SETTINGS_ERR_BUTTON);
-    CHECK(proto_test_write(twelve, 5, &work, &code) == SETTINGS_ERR_LENGTH);
+    CHECK(proto_test_write(twelve, 12, &work, &code) == SETTINGS_ERR_INVALID);
+    CHECK(proto_test_write(twelve, 5, &work, &code) == SETTINGS_ERR_INVALID);
     twelve[0] = 0;
     twelve[10] = 0; /* repeat_hz 0 in the passed block */
-    CHECK(proto_test_write(twelve, 12, &work, &code) == SETTINGS_ERR_REPEAT_HZ);
+    CHECK(proto_test_write(twelve, 12, &work, &code) == SETTINGS_ERR_INVALID);
 }
 
 static void test_adv_name(void) {

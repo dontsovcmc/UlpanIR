@@ -12,19 +12,12 @@
 #define SETTINGS_REPEAT_HZ_MIN 1
 #define SETTINGS_REPEAT_HZ_MAX 10
 
-/* Results; non-zero values are the ATT application error codes sent to the page. */
+/* Results; non-zero values are the ATT application error codes sent to the page. The page checks values itself
+ * and shows the exact reason, so the remote only says "invalid" or "flash write failed". */
 enum {
     SETTINGS_OK = 0,
-    SETTINGS_ERR_LENGTH = 0x80,
-    SETTINGS_ERR_VERSION = 0x81,
-    SETTINGS_ERR_FLAGS = 0x82,
-    SETTINGS_ERR_ADDRESS = 0x83,
-    SETTINGS_ERR_REPEAT_HZ = 0x84,
-    SETTINGS_ERR_REPEAT_MODE = 0x85,
-    SETTINGS_ERR_BUTTON = 0x86,
-    SETTINGS_ERR_NOT_ASSIGNED = 0x87,
-    SETTINGS_ERR_FLASH = 0x88,
-    SETTINGS_ERR_BUSY = 0x89,
+    SETTINGS_ERR_INVALID = 0x80,
+    SETTINGS_ERR_FLASH = 0x81,
 };
 
 typedef enum { REPEAT_FULL_FRAME = 0, REPEAT_NEC_CODE = 1 } repeat_mode_t;

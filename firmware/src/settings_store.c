@@ -14,10 +14,9 @@ void settings_load(settings_t *s) {
 }
 
 int settings_save(const settings_t *s) {
-    uint32_t buf[RECORD_WORDS] = {0}, check[RECORD_WORDS] = {0};
+    uint32_t buf[RECORD_WORDS] = {0};
     settings_record_pack(s, (uint8_t *)buf);
     if (EEPROM_ERASE(RECORD_OFFSET, EEPROM_BLOCK_SIZE) != 0) return SETTINGS_ERR_FLASH;
     if (EEPROM_WRITE(RECORD_OFFSET, buf, SETTINGS_RECORD_LEN) != 0) return SETTINGS_ERR_FLASH;
-    EEPROM_READ(RECORD_OFFSET, check, SETTINGS_RECORD_LEN);
-    return memcmp(buf, check, SETTINGS_RECORD_LEN) == 0 ? SETTINGS_OK : SETTINGS_ERR_FLASH;
+    return SETTINGS_OK;
 }

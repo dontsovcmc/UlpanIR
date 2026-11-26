@@ -16,10 +16,9 @@ static void wr16(uint8_t *p, uint16_t v) {
     p[1] = (uint8_t)(v >> 8);
 }
 
-/* Button record: flags u8, address u16, command u8. */
-static int check_address(const uint8_t *p) {
-    if ((p[0] & FLAG_ASSIGNED) && !(p[0] & FLAG_EXTENDED) && rd16(p + 1) > 0xFF) return SETTINGS_ERR_ADDRESS;
-    return SETTINGS_OK;
+/* Button record: flags u8, address u16, command u8. 8-bit address must fit in a byte. */
+static bool address_ok(const uint8_t *p) {
+    return !(p[0] & FLAG_ASSIGNED) || (p[0] & FLAG_EXTENDED) || rd16(p + 1) <= 0xFF;
 }
 
 static button_code_t decode_button(const uint8_t *p) {
@@ -34,15 +33,11 @@ static void encode_button(const button_code_t *b, uint8_t *p) {
 }
 
 int settings_parse(const uint8_t *buf, size_t len, settings_t *out) {
-    /* Checks in the order of docs/ble_protocol.md: the first failing one is returned. */
-    if (len != SETTINGS_BLOCK_LEN) return SETTINGS_ERR_LENGTH;
-    if (buf[0] != SETTINGS_VERSION) return SETTINGS_ERR_VERSION;
-    if ((buf[1] | buf[5]) & ~(FLAG_ASSIGNED | FLAG_EXTENDED)) return SETTINGS_ERR_FLAGS;
-    int err = check_address(buf + 1);
-    if (err == SETTINGS_OK) err = check_address(buf + 5);
-    if (err != SETTINGS_OK) return err;
-    if (buf[9] < SETTINGS_REPEAT_HZ_MIN || buf[9] > SETTINGS_REPEAT_HZ_MAX) return SETTINGS_ERR_REPEAT_HZ;
-    if (buf[10] > REPEAT_NEC_CODE) return SETTINGS_ERR_REPEAT_MODE;
+    if (len != SETTINGS_BLOCK_LEN || buf[0] != SETTINGS_VERSION) return SETTINGS_ERR_INVALID;
+    if ((buf[1] | buf[5]) & ~(FLAG_ASSIGNED | FLAG_EXTENDED)) return SETTINGS_ERR_INVALID;
+    if (!address_ok(buf + 1) || !address_ok(buf + 5)) return SETTINGS_ERR_INVALID;
+    if (buf[9] < SETTINGS_REPEAT_HZ_MIN || buf[9] > SETTINGS_REPEAT_HZ_MAX) return SETTINGS_ERR_INVALID;
+    if (buf[10] > REPEAT_NEC_CODE) return SETTINGS_ERR_INVALID;
 
     out->a = decode_button(buf + 1);
     out->b = decode_button(buf + 5);

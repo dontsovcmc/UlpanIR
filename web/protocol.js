@@ -15,35 +15,13 @@ export const VERSION = 1;
 export const REPEAT_HZ_MIN = 1;
 export const REPEAT_HZ_MAX = 10;
 
-export const ERR = {
-  OK: 0,
-  LENGTH: 0x80,
-  VERSION: 0x81,
-  FLAGS: 0x82,
-  ADDRESS: 0x83,
-  REPEAT_HZ: 0x84,
-  REPEAT_MODE: 0x85,
-  BUTTON: 0x86,
-  NOT_ASSIGNED: 0x87,
-  FLASH: 0x88,
-  BUSY: 0x89,
-};
-
-const ERROR_TEXT = {
-  [ERR.LENGTH]: 'Неверная длина данных: версии страницы и прошивки не совпадают',
-  [ERR.VERSION]: 'Пульт не знает эту версию настроек: обновите страницу или прошивку',
-  [ERR.FLAGS]: 'Неверные флаги кнопки',
-  [ERR.ADDRESS]: 'Адрес больше 0xFF: включите «16 бит» или исправьте адрес',
-  [ERR.REPEAT_HZ]: 'Частота повторов — от 1 до 10 кадров/с',
-  [ERR.REPEAT_MODE]: 'Вид повтора — «полный кадр» или «код повтора NEC»',
-  [ERR.BUTTON]: 'Неизвестная кнопка',
-  [ERR.NOT_ASSIGNED]: 'Кнопке не назначен код',
-  [ERR.FLASH]: 'Не удалось записать во флеш пульта, остались прежние настройки',
-  [ERR.BUSY]: 'Пульт ещё отправляет предыдущий кадр, повторите',
-};
+// The remote answers only "invalid" or "flash write failed"; the page checks the values itself and names the reason.
+export const DEVICE_ERR = { INVALID: 0x80, FLASH: 0x81 };
 
 export function errorText(code) {
-  return ERROR_TEXT[code] ?? `Ошибка пульта 0x${code.toString(16)}`;
+  if (code === DEVICE_ERR.INVALID) return 'Пульт отклонил данные: версии страницы и прошивки не совпадают?';
+  if (code === DEVICE_ERR.FLASH) return 'Не удалось записать во флеш пульта, повторите';
+  return `Ошибка пульта 0x${code.toString(16)}`;
 }
 
 /** Defaults of a clean remote: nothing assigned, 3 frames/s, full frame. */
@@ -52,18 +30,21 @@ export function defaults() {
   return { a: { ...none }, b: { ...none }, repeatHz: 3, repeatMode: 0 };
 }
 
-/** Same checks, same order as the firmware (settings_parse); 0 if valid. */
+/** The firmware checks (settings_parse) plus form input, with the reason in words; null if valid. */
 export function validate(s) {
   for (const k of ['a', 'b']) {
-    const c = s[k];
+    const c = s[k], name = `Кнопка ${k.toUpperCase()}`;
     if (!c.assigned) continue;
-    const max = c.extended ? 0xffff : 0xff;
-    if (!Number.isInteger(c.address) || c.address < 0 || c.address > max) return ERR.ADDRESS;
-    if (!Number.isInteger(c.command) || c.command < 0 || c.command > 0xff) return ERR.ADDRESS;
+    if (!Number.isInteger(c.address) || !Number.isInteger(c.command))
+      return `${name}: адрес и команда — шестнадцатеричные числа, например 0x32`;
+    if (!c.extended && c.address > 0xff) return `${name}: адрес больше 0xFF — включите «16 бит» или исправьте адрес`;
+    if (c.address < 0 || c.address > 0xffff) return `${name}: адрес — от 0x0000 до 0xFFFF`;
+    if (c.command < 0 || c.command > 0xff) return `${name}: команда — от 0x00 до 0xFF`;
   }
-  if (!Number.isInteger(s.repeatHz) || s.repeatHz < REPEAT_HZ_MIN || s.repeatHz > REPEAT_HZ_MAX) return ERR.REPEAT_HZ;
-  if (s.repeatMode !== 0 && s.repeatMode !== 1) return ERR.REPEAT_MODE;
-  return ERR.OK;
+  if (!Number.isInteger(s.repeatHz) || s.repeatHz < REPEAT_HZ_MIN || s.repeatHz > REPEAT_HZ_MAX)
+    return 'Частота повторов — от 1 до 10 кадров/с';
+  if (s.repeatMode !== 0 && s.repeatMode !== 1) return 'Вид повтора — «полный кадр» или «код повтора NEC»';
+  return null;
 }
 
 function encodeButton(c, out, off) {
@@ -95,14 +76,14 @@ function decodeButton(b, off) {
 /** Decodes a block read from the remote; throws on a block this page does not understand. */
 export function decodeBlock(bytes) {
   const b = bytes instanceof DataView ? new Uint8Array(bytes.buffer, bytes.byteOffset, bytes.byteLength) : bytes;
-  if (b.length !== BLOCK_LEN) throw new Error(errorText(ERR.LENGTH));
-  if (b[0] !== VERSION) throw new Error(errorText(ERR.VERSION));
+  if (b.length !== BLOCK_LEN) throw new Error('Неверная длина настроек: версии страницы и прошивки не совпадают');
+  if (b[0] !== VERSION) throw new Error('Пульт хранит другую версию настроек: обновите страницу или прошивку');
   return { a: decodeButton(b, 1), b: decodeButton(b, 5), repeatHz: b[9], repeatMode: b[10] };
 }
 
 export function decodeStatus(bytes) {
   const b = bytes instanceof DataView ? new Uint8Array(bytes.buffer, bytes.byteOffset, bytes.byteLength) : bytes;
-  if (b.length < 6) throw new Error(errorText(ERR.LENGTH));
+  if (b.length < 6) throw new Error('Неверная длина статуса: версии страницы и прошивки не совпадают');
   return { proto: b[0], firmware: `${b[1]}.${b[2]}.${b[3]}`, batteryV: (b[4] | (b[5] << 8)) / 1000 };
 }
 

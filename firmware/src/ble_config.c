@@ -90,9 +90,10 @@ static bStatus_t write_cb(uint16_t conn, gattAttribute_t *a, uint8_t *val, uint1
         button_code_t code;
         int err = proto_test_write(val, len, work, &code);
         if (err != SETTINGS_OK) return (bStatus_t)err;
-        if (ir_tx_busy()) return SETTINGS_ERR_BUSY;
-        nec_encode(code.address, code.command, code.extended, &test_frame);
-        ir_tx_start(&test_frame);
+        if (!ir_tx_busy()) { /* a test while the previous frame is still going is simply skipped */
+            nec_encode(code.address, code.command, code.extended, &test_frame);
+            ir_tx_start(&test_frame);
+        }
         return SUCCESS;
     }
     return ATT_ERR_ATTR_NOT_FOUND;

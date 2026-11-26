@@ -64,30 +64,25 @@ static void test_validation(void) {
     settings_t s;
     settings_defaults(&s);
     settings_t before = s;
-    CHECK(settings_parse(EXAMPLE, 10, &s) == SETTINGS_ERR_LENGTH);
-    CHECK(settings_parse(EXAMPLE, 12, &s) == SETTINGS_ERR_LENGTH);
+    CHECK(settings_parse(EXAMPLE, 10, &s) == SETTINGS_ERR_INVALID);
+    CHECK(settings_parse(EXAMPLE, 12, &s) == SETTINGS_ERR_INVALID);
     CHECK(memcmp(&s, &before, sizeof(s)) == 0); /* rejected: output untouched */
-    CHECK(parse_mod(0, 2) == SETTINGS_ERR_VERSION);
-    CHECK(parse_mod(1, 0x05) == SETTINGS_ERR_FLAGS);
-    CHECK(parse_mod(5, 0x81) == SETTINGS_ERR_FLAGS);
-    CHECK(parse_mod(3, 0x01) == SETTINGS_ERR_ADDRESS); /* A: address 0x0132 without 16-bit flag */
-    CHECK(parse_mod(9, 0) == SETTINGS_ERR_REPEAT_HZ);
-    CHECK(parse_mod(9, 11) == SETTINGS_ERR_REPEAT_HZ);
-    CHECK(parse_mod(9, 50) == SETTINGS_ERR_REPEAT_HZ); /* spec scenario: 50 frames/s rejected */
+    CHECK(parse_mod(0, 2) == SETTINGS_ERR_INVALID);
+    CHECK(parse_mod(1, 0x05) == SETTINGS_ERR_INVALID);
+    CHECK(parse_mod(5, 0x81) == SETTINGS_ERR_INVALID);
+    CHECK(parse_mod(3, 0x01) == SETTINGS_ERR_INVALID); /* A: address 0x0132 without 16-bit flag */
+    CHECK(parse_mod(9, 0) == SETTINGS_ERR_INVALID);
+    CHECK(parse_mod(9, 11) == SETTINGS_ERR_INVALID);
+    CHECK(parse_mod(9, 50) == SETTINGS_ERR_INVALID); /* spec scenario: 50 frames/s rejected */
     CHECK(parse_mod(9, 1) == SETTINGS_OK);
     CHECK(parse_mod(9, 10) == SETTINGS_OK);
-    CHECK(parse_mod(10, 2) == SETTINGS_ERR_REPEAT_MODE);
+    CHECK(parse_mod(10, 2) == SETTINGS_ERR_INVALID);
     /* unassigned button: address and command are not checked */
     uint8_t b[SETTINGS_BLOCK_LEN];
     memcpy(b, EXAMPLE, sizeof(b));
     b[5] = 0x00;
     b[7] = 0x12;
     CHECK(settings_parse(b, sizeof(b), &s) == SETTINGS_OK && !s.b.assigned);
-    /* checks run in the documented order: version before repeat_hz */
-    memcpy(b, EXAMPLE, sizeof(b));
-    b[0] = 9;
-    b[9] = 0;
-    CHECK(settings_parse(b, sizeof(b), &s) == SETTINGS_ERR_VERSION);
 }
 
 static void test_crc(void) {
