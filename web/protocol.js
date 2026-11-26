@@ -15,13 +15,12 @@ export const VERSION = 1;
 export const REPEAT_HZ_MIN = 1;
 export const REPEAT_HZ_MAX = 10;
 
-// The remote answers only "invalid" or "flash write failed"; the page checks the values itself and names the reason.
-export const DEVICE_ERR = { INVALID: 0x80, FLASH: 0x81 };
+// The remote answers only "ok" or "rejected" (0x80); the page checks the values itself and names the reason,
+// the remote writes its reason to the developer log (UART).
+export const DEVICE_REJECTED = 0x80;
 
-export function errorText(code) {
-  if (code === DEVICE_ERR.INVALID) return 'Пульт отклонил данные: версии страницы и прошивки не совпадают?';
-  if (code === DEVICE_ERR.FLASH) return 'Не удалось записать во флеш пульта, повторите';
-  return `Ошибка пульта 0x${code.toString(16)}`;
+export function errorText() {
+  return 'Пульт не принял данные. Проверьте значения и повторите; если не помогло — версии страницы и прошивки не совпадают';
 }
 
 /** Defaults of a clean remote: nothing assigned, 3 frames/s, full frame. */

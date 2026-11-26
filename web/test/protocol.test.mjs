@@ -2,7 +2,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  UUID, DEVICE_ERR, defaults, validate, encodeBlock, decodeBlock, decodeStatus, testPayload, necBytes, hex, parseHex,
+  UUID, DEVICE_REJECTED, defaults, validate, encodeBlock, decodeBlock, decodeStatus, testPayload, necBytes, hex, parseHex,
   errorText, Session,
 } from '../protocol.js';
 
@@ -78,11 +78,9 @@ test('validate: unassigned button fields are not checked', () => {
   assert.equal(validate(s), null);
 });
 
-test('device errors: two codes', () => {
-  assert.equal(DEVICE_ERR.INVALID, 0x80);
-  assert.equal(DEVICE_ERR.FLASH, 0x81);
-  assert.match(errorText(0x80), /отклонил/);
-  assert.match(errorText(0x81), /флеш/);
+test('device: one rejection code, generic text', () => {
+  assert.equal(DEVICE_REJECTED, 0x80);
+  assert.match(errorText(), /не принял/);
 });
 
 test('status: version and battery volts', () => {

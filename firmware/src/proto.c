@@ -11,14 +11,13 @@ void proto_uuid(proto_uuid_t which, uint8_t out[16]) {
     out[12] = (uint8_t)which;
 }
 
-int proto_config_write(const uint8_t *buf, size_t len, settings_t *work, int (*save)(const settings_t *)) {
+const char *proto_config_write(const uint8_t *buf, size_t len, settings_t *work,
+                               const char *(*save)(const settings_t *)) {
     settings_t s;
-    int err = settings_parse(buf, len, &s);
-    if (err != SETTINGS_OK) return err;
-    err = save(&s);
-    if (err != SETTINGS_OK) return err;
-    *work = s;
-    return SETTINGS_OK;
+    const char *err = settings_parse(buf, len, &s);
+    if (!err) err = save(&s);
+    if (!err) *work = s;
+    return err;
 }
 
 void proto_config_read(const settings_t *work, uint8_t out[SETTINGS_BLOCK_LEN]) { settings_serialize(work, out); }
@@ -32,20 +31,20 @@ void proto_status(uint16_t battery_mv, uint8_t out[PROTO_STATUS_LEN]) {
     out[5] = (uint8_t)(battery_mv >> 8);
 }
 
-int proto_test_write(const uint8_t *buf, size_t len, const settings_t *work, button_code_t *code) {
+const char *proto_test_write(const uint8_t *buf, size_t len, const settings_t *work, button_code_t *code) {
     settings_t passed;
     const settings_t *src = work;
-    if (len != 1 && len != 1 + SETTINGS_BLOCK_LEN) return SETTINGS_ERR_INVALID;
+    if (len != 1 && len != 1 + SETTINGS_BLOCK_LEN) return "test length is not 1 or 12";
     if (len == 1 + SETTINGS_BLOCK_LEN) {
-        int err = settings_parse(buf + 1, SETTINGS_BLOCK_LEN, &passed);
-        if (err != SETTINGS_OK) return err;
+        const char *err = settings_parse(buf + 1, SETTINGS_BLOCK_LEN, &passed);
+        if (err) return err;
         src = &passed;
     }
-    if (buf[0] > 1) return SETTINGS_ERR_INVALID;
+    if (buf[0] > 1) return "test button is not 0 or 1";
     const button_code_t *c = buf[0] == 0 ? &src->a : &src->b;
-    if (!c->assigned) return SETTINGS_ERR_INVALID;
+    if (!c->assigned) return "test button has no code";
     *code = *c;
-    return SETTINGS_OK;
+    return NULL;
 }
 
 void proto_adv_name(const uint8_t mac[6], char out[PROTO_NAME_LEN + 1]) {

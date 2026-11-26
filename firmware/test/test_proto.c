@@ -14,9 +14,10 @@ static int fails;
 
 static const uint8_t EXAMPLE[SETTINGS_BLOCK_LEN] = {0x01, 0x01, 0x32, 0x00, 0x02, 0x01, 0x32, 0x00, 0x03, 0x03, 0x00};
 
-static int save_calls, save_result;
+static int save_calls;
+static const char *save_result;
 static settings_t saved;
-static int fake_save(const settings_t *s) {
+static const char *fake_save(const settings_t *s) {
     save_calls++;
     saved = *s;
     return save_result;
@@ -37,8 +38,8 @@ static void test_config_write_ok(void) {
     settings_t work;
     settings_defaults(&work);
     save_calls = 0;
-    save_result = SETTINGS_OK;
-    CHECK(proto_config_write(EXAMPLE, sizeof(EXAMPLE), &work, fake_save) == SETTINGS_OK);
+    save_result = NULL;
+    CHECK(proto_config_write(EXAMPLE, sizeof(EXAMPLE), &work, fake_save) == NULL);
     CHECK(save_calls == 1 && saved.a.command == 0x02 && work.a.assigned && work.b.command == 0x03);
 }
 
@@ -50,7 +51,7 @@ static void test_config_write_invalid_keeps_settings(void) {
     memcpy(b, EXAMPLE, sizeof(b));
     b[9] = 50; /* spec: 50 frames/s is rejected */
     save_calls = 0;
-    CHECK(proto_config_write(b, sizeof(b), &work, fake_save) == SETTINGS_ERR_INVALID);
+    CHECK(proto_config_write(b, sizeof(b), &work, fake_save) != NULL);
     CHECK(save_calls == 0 && memcmp(&work, &before, sizeof(work)) == 0);
 }
 
@@ -58,10 +59,10 @@ static void test_config_write_flash_error_keeps_settings(void) {
     settings_t work;
     settings_defaults(&work);
     settings_t before = work;
-    save_result = SETTINGS_ERR_FLASH;
-    CHECK(proto_config_write(EXAMPLE, sizeof(EXAMPLE), &work, fake_save) == SETTINGS_ERR_FLASH);
+    save_result = "flash write failed";
+    CHECK(proto_config_write(EXAMPLE, sizeof(EXAMPLE), &work, fake_save) == save_result);
     CHECK(memcmp(&work, &before, sizeof(work)) == 0);
-    save_result = SETTINGS_OK;
+    save_result = NULL;
 }
 
 static void test_config_read(void) {
@@ -85,21 +86,21 @@ static void test_test_write(void) {
     button_code_t code;
     /* 1 byte: current working settings -> A not assigned */
     uint8_t one[1] = {0};
-    CHECK(proto_test_write(one, 1, &work, &code) == SETTINGS_ERR_INVALID);
+    CHECK(proto_test_write(one, 1, &work, &code) != NULL);
     /* 12 bytes: code from the page's unsaved block */
     uint8_t twelve[12];
     twelve[0] = 1;
     memcpy(twelve + 1, EXAMPLE, SETTINGS_BLOCK_LEN);
-    CHECK(proto_test_write(twelve, 12, &work, &code) == SETTINGS_OK);
+    CHECK(proto_test_write(twelve, 12, &work, &code) == NULL);
     CHECK(code.assigned && code.address == 0x32 && code.command == 0x03);
     CHECK(!work.a.assigned); /* nothing stored */
     /* errors */
     twelve[0] = 2;
-    CHECK(proto_test_write(twelve, 12, &work, &code) == SETTINGS_ERR_INVALID);
-    CHECK(proto_test_write(twelve, 5, &work, &code) == SETTINGS_ERR_INVALID);
+    CHECK(proto_test_write(twelve, 12, &work, &code) != NULL);
+    CHECK(proto_test_write(twelve, 5, &work, &code) != NULL);
     twelve[0] = 0;
     twelve[10] = 0; /* repeat_hz 0 in the passed block */
-    CHECK(proto_test_write(twelve, 12, &work, &code) == SETTINGS_ERR_INVALID);
+    CHECK(proto_test_write(twelve, 12, &work, &code) != NULL);
 }
 
 static void test_adv_name(void) {

@@ -32,18 +32,19 @@ static void encode_button(const button_code_t *b, uint8_t *p) {
     p[3] = b->command;
 }
 
-int settings_parse(const uint8_t *buf, size_t len, settings_t *out) {
-    if (len != SETTINGS_BLOCK_LEN || buf[0] != SETTINGS_VERSION) return SETTINGS_ERR_INVALID;
-    if ((buf[1] | buf[5]) & ~(FLAG_ASSIGNED | FLAG_EXTENDED)) return SETTINGS_ERR_INVALID;
-    if (!address_ok(buf + 1) || !address_ok(buf + 5)) return SETTINGS_ERR_INVALID;
-    if (buf[9] < SETTINGS_REPEAT_HZ_MIN || buf[9] > SETTINGS_REPEAT_HZ_MAX) return SETTINGS_ERR_INVALID;
-    if (buf[10] > REPEAT_NEC_CODE) return SETTINGS_ERR_INVALID;
+const char *settings_parse(const uint8_t *buf, size_t len, settings_t *out) {
+    if (len != SETTINGS_BLOCK_LEN) return "block length is not 11";
+    if (buf[0] != SETTINGS_VERSION) return "block version is not 1";
+    if ((buf[1] | buf[5]) & ~(FLAG_ASSIGNED | FLAG_EXTENDED)) return "unknown flag bits";
+    if (!address_ok(buf + 1) || !address_ok(buf + 5)) return "8-bit address above 0xFF";
+    if (buf[9] < SETTINGS_REPEAT_HZ_MIN || buf[9] > SETTINGS_REPEAT_HZ_MAX) return "repeat_hz not in 1..10";
+    if (buf[10] > REPEAT_NEC_CODE) return "repeat_mode not 0 or 1";
 
     out->a = decode_button(buf + 1);
     out->b = decode_button(buf + 5);
     out->repeat_hz = buf[9];
     out->repeat_mode = (repeat_mode_t)buf[10];
-    return SETTINGS_OK;
+    return NULL;
 }
 
 void settings_serialize(const settings_t *s, uint8_t out[SETTINGS_BLOCK_LEN]) {
@@ -70,7 +71,7 @@ void settings_record_pack(const settings_t *s, uint8_t out[SETTINGS_RECORD_LEN])
 
 bool settings_record_unpack(const uint8_t in[SETTINGS_RECORD_LEN], settings_t *out) {
     if (settings_crc16(in, SETTINGS_BLOCK_LEN) == rd16(in + SETTINGS_BLOCK_LEN) &&
-        settings_parse(in, SETTINGS_BLOCK_LEN, out) == SETTINGS_OK)
+        settings_parse(in, SETTINGS_BLOCK_LEN, out) == NULL)
         return true;
     settings_defaults(out);
     return false;

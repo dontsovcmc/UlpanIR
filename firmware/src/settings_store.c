@@ -7,16 +7,16 @@
 #define RECORD_OFFSET 0
 #define RECORD_WORDS  ((SETTINGS_RECORD_LEN + 3) / 4) /* SDK buffers: RAM, 4-byte aligned */
 
-void settings_load(settings_t *s) {
+bool settings_load(settings_t *s) {
     uint32_t buf[RECORD_WORDS];
     EEPROM_READ(RECORD_OFFSET, buf, SETTINGS_RECORD_LEN);
-    settings_record_unpack((const uint8_t *)buf, s);
+    return settings_record_unpack((const uint8_t *)buf, s);
 }
 
-int settings_save(const settings_t *s) {
+const char *settings_save(const settings_t *s) {
     uint32_t buf[RECORD_WORDS] = {0};
     settings_record_pack(s, (uint8_t *)buf);
-    if (EEPROM_ERASE(RECORD_OFFSET, EEPROM_BLOCK_SIZE) != 0) return SETTINGS_ERR_FLASH;
-    if (EEPROM_WRITE(RECORD_OFFSET, buf, SETTINGS_RECORD_LEN) != 0) return SETTINGS_ERR_FLASH;
-    return SETTINGS_OK;
+    if (EEPROM_ERASE(RECORD_OFFSET, EEPROM_BLOCK_SIZE) != 0) return "flash erase failed";
+    if (EEPROM_WRITE(RECORD_OFFSET, buf, SETTINGS_RECORD_LEN) != 0) return "flash write failed";
+    return NULL;
 }

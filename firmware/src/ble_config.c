@@ -4,7 +4,9 @@
 #include "ble_config.h"
 #include "HAL.h"
 #include "board.h"
+#include "config.h"
 #include "ir_tx.h"
+#include "log.h"
 #include "nec.h"
 #include "proto.h"
 #include "settings_store.h"
@@ -14,6 +16,7 @@
 #define EVT_TIMEOUT 0x0004
 
 #define TIMEOUT_MS  60000
+#define ERR_REJECTED 0x80 /* the only error the page gets; the reason is in the log */
 #define BLINK_MS    250
 #define ADV_INTERVAL 160 /* 100 ms in 0.625 ms units */
 
@@ -84,16 +87,33 @@ static bStatus_t write_cb(uint16_t conn, gattAttribute_t *a, uint8_t *val, uint1
     (void)method;
     touch();
     if (offset > 0) return ATT_ERR_ATTR_NOT_LONG;
-    if (is_uuid(a, uuid_ping)) return SUCCESS;
-    if (is_uuid(a, uuid_config)) return (bStatus_t)proto_config_write(val, len, work, settings_save);
+    if (is_uuid(a, uuid_ping)) {
+        LOG("ble: ping");
+        return SUCCESS;
+    }
+    if (is_uuid(a, uuid_config)) {
+        const char *err = proto_config_write(val, len, work, settings_save);
+        if (err) {
+            LOG("ble: config rejected (%u bytes): %s", len, err);
+            return ERR_REJECTED;
+        }
+        log_settings("ble: config saved", work);
+        return SUCCESS;
+    }
     if (is_uuid(a, uuid_test)) {
         button_code_t code;
-        int err = proto_test_write(val, len, work, &code);
-        if (err != SETTINGS_OK) return (bStatus_t)err;
-        if (!ir_tx_busy()) { /* a test while the previous frame is still going is simply skipped */
-            nec_encode(code.address, code.command, code.extended, &test_frame);
-            ir_tx_start(&test_frame);
+        const char *err = proto_test_write(val, len, work, &code);
+        if (err) {
+            LOG("ble: test rejected (%u bytes): %s", len, err);
+            return ERR_REJECTED;
         }
+        if (ir_tx_busy()) { /* a test while the previous frame is still going is simply skipped */
+            LOG("ble: test skipped, frame in progress");
+            return SUCCESS;
+        }
+        LOG("ble: test %c frame 0x%X/0x%02X", val[0] ? 'B' : 'A', code.address, code.command);
+        nec_encode(code.address, code.command, code.extended, &test_frame);
+        ir_tx_start(&test_frame);
         return SUCCESS;
     }
     return ATT_ERR_ATTR_NOT_FOUND;
@@ -131,8 +151,14 @@ static void set_advertising(uint8_t on) { GAPRole_SetParameter(GAPROLE_ADVERT_EN
 
 static void state_cb(gapRole_States_t state, gapRoleEvent_t *ev) {
     (void)ev;
+    uint8_t s = state & GAPROLE_STATE_ADV_MASK;
+    if (s == GAPROLE_ADVERTISING) LOG("ble: advertising");
+    if (s == GAPROLE_CONNECTED) LOG("ble: connected");
     /* after a disconnect, advertise again until the timeout switches the remote off */
-    if ((state & GAPROLE_STATE_ADV_MASK) == GAPROLE_WAITING) set_advertising(TRUE);
+    if (s == GAPROLE_WAITING) {
+        LOG("ble: disconnected");
+        set_advertising(TRUE);
+    }
 }
 
 static gapRolesCBs_t role_cbs = {state_cb, NULL, NULL};
@@ -140,6 +166,7 @@ static gapBondCBs_t bond_cbs = {NULL, NULL, NULL};
 
 /* ---- leaving the mode ---- */
 static void switch_off(void) {
+    LOG("config mode: %u s without commands, switching off", TIMEOUT_MS / 1000);
     set_advertising(FALSE);
     led_set(0);
 #if HAS_HOLD
@@ -191,9 +218,26 @@ __HIGH_CODE __attribute__((noinline, noreturn)) static void loop(void) {
     for (;;) TMOS_SystemProcess();
 }
 
+/* Diagnostics for the developer, printed once on entering the config mode (not on every button press). */
+static void log_diagnostics(void) {
+#ifdef DEBUG
+    uint8_t mac[6];
+    GetMACAddress(mac);
+    uint8_t rom_id = (uint8_t)((*(volatile uint32_t *)ROM_CFG_VERSION) & 0xFF);
+    LOG("config mode: UlpanIR fw %d.%d.%d, BLE lib %s", FW_VERSION_MAJOR, FW_VERSION_MINOR, FW_VERSION_PATCH,
+        (const char *)VER_LIB);
+    LOG("chip: R8_CHIP_ID=0x%02X, ROM_CFG_VERSION id=%u (%s: DataFlash erase only by 4 KB)", R8_CHIP_ID, rom_id,
+        rom_id == DEF_CHIP_ID_CH592A ? "CH592A" : "not CH592A");
+    LOG("mac %02X:%02X:%02X:%02X:%02X:%02X, vbat %u mV, Fsys %lu Hz", mac[5], mac[4], mac[3], mac[2], mac[1],
+        mac[0], battery_mv, GetSysClock());
+    log_settings("settings", work);
+#endif
+}
+
 void ble_config_run(settings_t *settings) {
     work = settings;
     battery_mv = measure_battery_mv(); /* before the radio starts: no RF load on the battery */
+    log_diagnostics();
 
     proto_uuid(PROTO_UUID_SERVICE, uuid_service);
     proto_uuid(PROTO_UUID_CONFIG, uuid_config);

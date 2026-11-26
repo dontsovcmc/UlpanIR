@@ -3,9 +3,9 @@
 #define SETTINGS_STORE_H
 #include "settings.h"
 
-/* Reads the record; defaults (nothing assigned) on a clean chip or a damaged record. */
-void settings_load(settings_t *s);
-/* Erases and writes the record; SETTINGS_OK or SETTINGS_ERR_FLASH. A write interrupted by power
+/* Reads the record; false and defaults (nothing assigned) on a clean chip or a damaged record. */
+bool settings_load(settings_t *s);
+/* Erases and writes the record; NULL on success, else the reason. A write interrupted by power
  * loss leaves a record with a bad CRC: the remote starts unconfigured and is configured again. */
-int settings_save(const settings_t *s);
+const char *settings_save(const settings_t *s);
 #endif

@@ -201,10 +201,8 @@ function setConnected(on) {
 }
 
 function deviceError(e) {
-  // Hypothesis: Chrome does not pass the ATT application error code (0x80/0x81) to the page, so the form is
-  // validated before sending; a code is shown only if the browser's message contains it.
-  const m = /0x(8[01])/i.exec(e?.message ?? '');
-  return m ? errorText(parseInt(m[1], 16)) : `Пульт отклонил операцию (${e?.message ?? e})`;
+  // The remote says only "rejected"; the reason is in its UART log. The form is validated before sending.
+  return `${errorText()} (${e?.message ?? e})`;
 }
 
 async function readAll() {

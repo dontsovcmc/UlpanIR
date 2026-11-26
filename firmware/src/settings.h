@@ -12,13 +12,8 @@
 #define SETTINGS_REPEAT_HZ_MIN 1
 #define SETTINGS_REPEAT_HZ_MAX 10
 
-/* Results; non-zero values are the ATT application error codes sent to the page. The page checks values itself
- * and shows the exact reason, so the remote only says "invalid" or "flash write failed". */
-enum {
-    SETTINGS_OK = 0,
-    SETTINGS_ERR_INVALID = 0x80,
-    SETTINGS_ERR_FLASH = 0x81,
-};
+/* Checks return NULL when all is well, or a short reason for the log ("repeat_hz not in 1..10").
+ * Over BLE any reason becomes one ATT error: the page itself tells the user what is wrong. */
 
 typedef enum { REPEAT_FULL_FRAME = 0, REPEAT_NEC_CODE = 1 } repeat_mode_t;
 
@@ -36,8 +31,8 @@ typedef struct {
 } settings_t;
 
 void settings_defaults(settings_t *s);
-/* Validates and decodes a block; on error returns the code and leaves *out untouched. */
-int settings_parse(const uint8_t *buf, size_t len, settings_t *out);
+/* Validates and decodes a block; NULL if valid, else the reason, and *out is left untouched. */
+const char *settings_parse(const uint8_t *buf, size_t len, settings_t *out);
 void settings_serialize(const settings_t *s, uint8_t out[SETTINGS_BLOCK_LEN]);
 
 uint16_t settings_crc16(const uint8_t *data, size_t len); /* CRC-16/CCITT-FALSE */
