@@ -1,0 +1,92 @@
+# Прошивка UlpanIR (WCH CH592F)
+
+Сейчас в прошивке — отправка NEC-кода по кнопке A/B с повторами при удержании и индикатором на время кадра
+(`openspec/changes/add-ir-nec-transmit`). BLE-настройка, сон и защёлка питания — следующие изменения.
+
+## Инструменты (macOS, Apple Silicon)
+
+| Что | Версия | Откуда | Куда |
+|---|---|---|---|
+| компилятор | xPack riscv-none-elf-gcc 15.2.0-1, darwin-arm64 | github.com/xpack-dev-tools/riscv-none-elf-gcc-xpack | `~/tools/xpack-riscv-none-elf-gcc-15.2.0-1/` |
+| загрузчик по USB | wchisp 0.3.0 | github.com/ch32-rs/wchisp | `~/tools/bin/wchisp-macos-arm64/wchisp` |
+| WCH-LinkE (SWD) | wlink 0.1.3 | github.com/ch32-rs/wlink | `~/tools/bin/wlink-macos-arm64/wlink` |
+| SDK | openwch/ch592, нужная часть уже в `vendor/ch592/` (версия — `vendor/ch592/VERSION`, лицензия Apache-2.0) | github.com/openwch/ch592 | в репозитории |
+
+Пути переопределяются переменными `TOOLCHAIN`, `WCHISP`, `WLINK` у `make`.
+
+```sh
+mkdir -p ~/tools && cd ~/tools
+curl -LO https://github.com/xpack-dev-tools/riscv-none-elf-gcc-xpack/releases/download/v15.2.0-1/xpack-riscv-none-elf-gcc-15.2.0-1-darwin-arm64.tar.gz
+tar xzf xpack-riscv-none-elf-gcc-15.2.0-1-darwin-arm64.tar.gz
+mkdir -p bin
+curl -L https://github.com/ch32-rs/wchisp/releases/download/v0.3.0/wchisp-v0.3.0-macos-arm64.tar.gz | tar xz -C bin
+curl -L https://github.com/ch32-rs/wlink/releases/download/v0.1.3/wlink-v0.1.3-macos-arm64.tar.gz | tar xz -C bin
+```
+
+## Сборка
+
+```sh
+cd firmware
+make test                         # unit-тесты на Mac: NEC, тайминги таймеров, логика кнопок и повторов
+make                              # прошивка пульта для нашей платы: build/ulpanir/remote.hex/.bin
+make BOARD=weact                  # то же для отладочной платы WeAct CH592F Core Board
+make BOARD=weact APP=blink        # проверка окружения: светодиод платы мигает раз в секунду
+```
+
+Флаги компилятора — `-march=rv32imac_zicsr_zifencei -mabi=ilp32`, `-DINT_SOFT`: обработчики прерываний
+объявлены стандартным атрибутом `interrupt`, а не WCH-атрибутом `WCH-Interrupt-fast`, который понимает только
+компилятор WCH. Стартовый код SDK оставлен как есть (аппаратное сохранение регистров включено). Гипотеза:
+так обработчики работают, только медленнее, — проверить на железе (задачи 3.1 и 3.4).
+
+## Платы и выводы (`src/board.h`)
+
+| Сигнал | Наша плата (`BOARD=ulpanir`) | WeAct CH592F Core Board (`BOARD=weact`) |
+|---|---|---|
+| ИК-несущая (TMR1 PWM) | PA10 → R4 → затвор Q3 | PB10 (вывод TMR1_ после переназначения): на PA10/PA11 у WeAct кварц 32,768 кГц |
+| Индикатор | PB4 → R5 → LED3, горит при «1» | PA8, синий D2, горит при «0» |
+| Кнопка A | PA4 (через D3, подтяжка внутри, нажата = «0») | PB22 — кнопка BOOT (K2) |
+| Кнопка B | PB7 (через D4) | PA4 — внешняя кнопка на землю |
+| Удержание защёлки HOLD | PA15 = «1» сразу после старта | нет |
+
+Выводы WeAct взяты из `docs/ref_WeAct_CH592F_CoreBoard_sch.pdf`. Коды кнопок, частота и вид повторов —
+константы в `src/config.h` (A: 0x32/0x02, B: 0x32/0x03 — тестовые, коды Optoma X341 не подтверждены).
+
+## Как устроено
+
+- `src/nec.c` — кадр NEC как массив длительностей «импульс/пауза» в полумикросекундах (562,5 мкс = 1125);
+  кадр повтора NEC.
+- `src/ir_timing.c` — такты таймеров: период несущей 38 кГц и ширина 1/3 при 60 МГц, перевод длительностей.
+- `src/remote.c` — логика кнопок раз в 1 мс: антидребезг 20 мс, кадр по нажатию, повторы с периодом 333 мс
+  (полный кадр или код повтора NEC), стоп по отпусканию; обе кнопки сразу — ничего (будет режим настройки).
+- `src/ir_tx.c` — TMR1 непрерывно даёт несущую, её выход включается и выключается по огибающей; огибающую ведёт
+  TMR0 прерываниями по массиву длительностей. Индикатор горит, пока идёт кадр.
+- `src/main.c` — цикл 1 мс: опрос кнопок → `remote_tick` → `ir_tx_start`.
+
+## Прошивка
+
+**Отладочная плата WeAct, загрузчиком по USB.** Держать BOOT (K2), подключить USB-C к Mac, отпустить, затем:
+
+```sh
+make BOARD=weact APP=blink flash-isp     # или APP=remote
+```
+
+**Наша плата, WCH-LinkE через гребёнку J1.** Батарейку вынуть (3,3 В с WCH-LinkE иначе уйдут в CR2032 через
+диод Q1). Соединить GND–J1.1, 3V3–J1.2, SWDIO–J1.3, SWCLK–J1.4, затем:
+
+```sh
+make flash-link
+```
+
+Не проверено на железе: железа пока нет. Вход в загрузчик кнопкой BOOT при подключении USB — по эталонной схеме
+WeAct (BOOT на PB22) и даташиту CH592; поддержка CH59X — из справки wlink 0.1.3.
+
+## Проверка приёмником (задачи 3.1–3.4)
+
+- **Логический анализатор** на выводе ИК (PA10 / PB10) и индикатора: несущая 38 кГц ±1 %, скважность 1/3;
+  9 мс / 4,5 мс / 562,5 / 1687,5 мкс в допуске ±5 %; удержание 2 с даёт 6–7 кадров; индикатор горит только
+  во время кадра.
+- **Приёмник TSOP38238 + Arduino с библиотекой IRremote** (пример ReceiveDemo) напротив ИК-светодиода:
+  кнопка A → адрес 0x32, команда 0x02; кнопка B → 0x32, 0x03; 10 нажатий из 10.
+
+На WeAct ИК-светодиода нет: к PB10 подключить ИК-светодиод через транзистор, как на нашей плате (резистор
+100 Ом на затвор N-MOSFET, светодиод с резистором 33 Ом от 3,3 В), или смотреть сигнал анализатором.
