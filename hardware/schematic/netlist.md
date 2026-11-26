@@ -1,7 +1,8 @@
 # UlpanIR — таблица соединений (netlist) для ввода в EasyEDA
 
-Номиналы и коды JLCPCB — `hardware/README.md` §5. Рисунки — `sheet1_power_latch.png` (питание и
-защёлка), `sheet2_mcu.png` (CH592F), `sheet3_ir_led.png` (ИК и индикатор); перерисовать — `draw.py`.
+Номиналы и коды JLCPCB — `hardware/README.md` §5. Текущая схема — `UlpanIR_schematic_easyeda.pdf`
+(выгрузка из EasyEDA, исходник `hardware/easyeda/UlpanIR.epro2`), список соединений EasyEDA —
+`UlpanIR_netlist.enet`. Черновые рисунки по листам 25.11.2026 — в `history_2026-11-25/`, устарели.
 
 Выводы SOT-23 у IRLML6401 / IRLML6344: 1 — G, 2 — S, 3 — D (по даташитам Infineon/JSMSEMI — сверить с
 посадочным местом в EasyEDA).
@@ -39,7 +40,7 @@ IR_A2a — **IR_A2A** (EasyEDA пишет имена цепей заглавны
 | **VINTA** | U1.20, C7 |
 | **XI / XO** | U1.19 (X32MI) — X1; U1.18 (X32MO) — X1 |
 | **ANT** | U1.21, Ca1, Ra |
-| **ANT_F** | Ra, Ca2, питание антенны (TI AN043) |
+| **ANT_F** | Ra, Ca2, точка питания антенны PIFA WCH |
 | **BOOT** | U1.17 (PB22) — не выведен |
 | **RST** | U1.16 (PB23) — не выведен |
 | **USB_D+ / USB_D−** | U1.12 (PB11) / U1.13 (PB10) — не выведены |
