@@ -2,7 +2,8 @@
 
 | Файл | Что | Откуда |
 |---|---|---|
-| `Gerber_PCB1_v3_2026-11-26.zip` | Gerber и сверловка платы, разводка v3 (2 слоя, 37 × 24 мм) | EasyEDA Pro, PCB1 → Gerber, 26.11.2026 |
+| `Gerber_PCB1_v3a_2026-11-26.zip` | **для заказа.** Gerber и сверловка, разводка v3a (2 слоя, 37 × 24 мм, 1,2 мм): пазы BAT+/BAT− вдоль площадок | EasyEDA Pro, PCB1 → Gerber, 26.11.2026 14:44 |
+| `Gerber_PCB1_v3_2026-11-26.zip` | **не заказывать** — v3 с пазами BAT+/BAT− поперёк площадок | EasyEDA Pro, PCB1 → Gerber, 26.11.2026 |
 
 BOM и CPL (pick-and-place) для сборки JLCPCB ещё не выгружены — задача 3.2 в
 `openspec/changes/add-board-hardware/tasks.md`. Гребёнка J1 в BOM не входит (только отверстия).
