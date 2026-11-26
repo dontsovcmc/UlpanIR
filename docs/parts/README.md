@@ -18,7 +18,7 @@
 | LED3 | KT-0603R красный (KENTO) | C2286 | `KT-0603R_red_LED_C2286.pdf` |
 | SW1, SW2 | TS-1187A-B-A-B (XKB) | C318884 | `TS-1187A-B-A-B_switch_C318884.pdf` |
 | BT1 (не используется) | держатель CR2032 XDCR-2032-603 — не ставится: контакты батарейки донора паяются в пазы BAT+/BAT− | C7498148 | `XDCR-2032-603_CR2032_holder_C7498148.pdf` |
-| J1 | гребёнка 1×6, 2,54 мм, PZ254V-11-06P (XFCN) — в BOM не входит | C492405 | даташит не скачивался |
+| J1 | гребёнка 1×9, 2,54 мм, PZ254V-11-09P (XFCN) — в BOM не входит | C492408 | даташит не скачивался |
 | R1–R5, Rg, RL1, RL2 | резисторы UNI-ROYAL 0402WGF (общий даташит серии) | C25741, C26083, C25076, C25105, C25117 | `UNI-ROYAL_0402WGF_resistors.pdf` |
 | C1–C8, Cm | конденсаторы Samsung CL (общий каталог MLCC) | C1525, C1622, C45783, C52923 | `Samsung_CL_MLCC_capacitors.pdf` |
 | антенна | PIFA WCH под FR4 1,2 мм (с 25.11.2026); шаблоны — `../wch/ANT-F-2.4G-FR4.zip`, указания — `../wch/WCH_BLE_circuit_PCB_design_notes_CN.pdf` | — | — |
