@@ -3,6 +3,7 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 #define DEBOUNCE_MS      20
+#define CONFIG_HOLD_MS   4000   /* both buttons this long -> BLE configuration mode */
 #define IR_CARRIER_HZ    38000
 
 /* Firmware version reported by the BLE `status` characteristic. */

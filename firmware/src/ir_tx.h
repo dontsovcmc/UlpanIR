@@ -8,4 +8,6 @@ void ir_tx_init(void);
 /* Starts sending; returns false if a frame is still in progress. *f must stay valid until done. */
 bool ir_tx_start(const nec_frame_t *f);
 bool ir_tx_busy(void);
+/* Aborts the frame in progress (both buttons pressed): carrier off, LED off. */
+void ir_tx_stop(void);
 #endif

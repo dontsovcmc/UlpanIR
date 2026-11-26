@@ -29,6 +29,16 @@ void ir_tx_init(void) {
 
 bool ir_tx_busy(void) { return busy; }
 
+void ir_tx_stop(void) {
+    PFIC_DisableIRQ(TMR0_IRQn);
+    TMR0_Disable();
+    TMR0_ClearITFlag(TMR0_3_IT_CYC_END);
+    carrier(false);
+    led_set(0);
+    busy = false;
+    PFIC_EnableIRQ(TMR0_IRQn);
+}
+
 bool ir_tx_start(const nec_frame_t *f) {
     if (busy || f == 0 || f->count == 0) return false;
     for (uint8_t i = 0; i < f->count; i++) seg_ticks[i] = ir_half_us_to_ticks(FREQ_SYS, f->half_us[i]);

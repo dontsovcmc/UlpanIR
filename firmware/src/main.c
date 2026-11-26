@@ -1,4 +1,6 @@
-/* UlpanIR: button A/B -> NEC frame with repeats while held; codes from DataFlash settings. */
+/* UlpanIR: button A/B -> NEC frame with repeats while held; codes from DataFlash settings;
+ * both buttons 4 s -> BLE configuration mode. */
+#include "ble_config.h"
 #include "board.h"
 #include "config.h"
 #include "dispatch.h"
@@ -44,7 +46,7 @@ int main(void) {
 #endif
 
     const remote_cfg_t cfg = {dispatch_period_ms(settings.repeat_hz), settings.repeat_mode == REPEAT_NEC_CODE,
-                              DEBOUNCE_MS};
+                              DEBOUNCE_MS, CONFIG_HOLD_MS};
     remote_t remote;
     remote_init(&remote, &cfg);
     dispatch_t disp;
@@ -55,6 +57,8 @@ int main(void) {
         mDelaymS(1);
         now++;
         action_t a = remote_tick(&remote, now, btn_a_down(), btn_b_down());
+        if (a.kind == ACT_STOP) ir_tx_stop();          /* both buttons: no IR at all */
+        if (a.kind == ACT_CONFIG) ble_config_run(&settings); /* does not return */
         if (remote.active == BTN_NONE) dispatch_released(&disp);
         out_t o = dispatch_action(&disp, &settings, a);
         if (o.kind == OUT_UNASSIGNED) {

@@ -6,13 +6,20 @@
 #include <stdint.h>
 
 typedef enum { BTN_NONE = 0, BTN_A, BTN_B } button_t;
-typedef enum { ACT_NONE = 0, ACT_SEND_FRAME, ACT_SEND_REPEAT } action_kind_t;
+typedef enum {
+    ACT_NONE = 0,
+    ACT_SEND_FRAME,
+    ACT_SEND_REPEAT,
+    ACT_STOP,   /* both buttons down while sending: abort the frame in progress */
+    ACT_CONFIG, /* both buttons held config_hold_ms: enter the BLE config mode */
+} action_kind_t;
 typedef struct { action_kind_t kind; button_t button; } action_t;
 
 typedef struct {
     uint16_t period_ms;  /* repeat period while held (333 = 3 frames/s) */
     bool nec_repeat;     /* false: repeat the full frame; true: NEC repeat code */
     uint8_t debounce_ms; /* level must be stable this long */
+    uint16_t config_hold_ms; /* both buttons this long -> ACT_CONFIG; 0 disables */
 } remote_cfg_t;
 
 typedef struct {
@@ -22,6 +29,9 @@ typedef struct {
     button_t active;
     bool wait_release; /* sequence ended: ignore buttons until both are released */
     uint32_t last_start;
+    bool both;          /* both buttons are down */
+    bool config_sent;   /* ACT_CONFIG already given for this hold */
+    uint32_t both_since;
 } remote_t;
 
 void remote_init(remote_t *r, const remote_cfg_t *cfg);

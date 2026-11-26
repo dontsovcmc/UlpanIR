@@ -19,6 +19,27 @@ action_t remote_tick(remote_t *r, uint32_t now_ms, bool a_down, bool b_down) {
     debounce(a_down, &r->raw_a, &r->deb_a, &r->changed_a, now_ms, r->cfg.debounce_ms);
     debounce(b_down, &r->raw_b, &r->deb_b, &r->changed_b, now_ms, r->cfg.debounce_ms);
 
+    /* Both buttons: never IR (spec remote-config); held config_hold_ms -> config mode. */
+    if (r->deb_a && r->deb_b) {
+        if (!r->both) {
+            r->both = true;
+            r->both_since = now_ms;
+            r->config_sent = false;
+            if (r->active != BTN_NONE) act.kind = ACT_STOP;
+            r->active = BTN_NONE;
+        }
+        if (!r->config_sent && r->cfg.config_hold_ms && now_ms - r->both_since >= r->cfg.config_hold_ms) {
+            r->config_sent = true;
+            act.kind = ACT_CONFIG;
+        }
+        return act;
+    }
+    if (r->both) {
+        r->both = false;
+        r->wait_release = r->deb_a || r->deb_b; /* the remaining button must be released first */
+        return act;
+    }
+
     if (r->wait_release) {
         if (!r->deb_a && !r->deb_b) r->wait_release = false;
         return act;
