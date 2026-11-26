@@ -20,12 +20,12 @@ Q2,-7.4mm,-1.5mm,Top,90
 Q3,15mm,-5.7mm,Top,180
 R1,-6.4mm,1.3mm,Top,270
 R2,-8.3mm,-3.9mm,Top,270
-R3,12.6mm,-7.6mm,Top,270
+R3,12.3mm,-7.6mm,Top,270
 R4,12.3mm,-6.2mm,Top,0
 R5,14mm,6.5mm,Top,90
 R6,-8.4mm,2.2mm,Top,270
 R7,15mm,-2.9mm,Top,0
-R8,13mm,3.7mm,Top,0
+R8,13mm,3.65mm,Top,0
 R9,-1.6mm,4.15mm,Top,90
 SW1,-13mm,0mm,Top,0
 SW2,5.6mm,0mm,Top,0
