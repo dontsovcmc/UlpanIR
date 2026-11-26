@@ -5,8 +5,13 @@
 | `Gerber_PCB1_v3a_2026-11-26.zip` | **для заказа.** Gerber и сверловка, разводка v3a (2 слоя, 37 × 24 мм, 1,2 мм): пазы BAT+/BAT− вдоль площадок | EasyEDA Pro, PCB1 → Gerber, 26.11.2026 14:44 |
 | `Gerber_PCB1_v3_2026-11-26.zip` | **не заказывать** — v3 с пазами BAT+/BAT− поперёк площадок | EasyEDA Pro, PCB1 → Gerber, 26.11.2026 |
 
-BOM и CPL (pick-and-place) для сборки JLCPCB ещё не выгружены — задача 3.2 в
-`openspec/changes/add-board-hardware/tasks.md`. Гребёнка J1 в BOM не входит (только отверстия).
+| `UlpanIR_BOM_jlcpcb.csv` | список деталей для сборки JLCPCB: 19 строк, 32 детали, у всех код LCSC | EasyEDA Pro, PCB1 → BOM, 26.11.2026, переведён в UTF-8 CSV формата JLCPCB |
+| `UlpanIR_CPL_jlcpcb.csv` | координаты и повороты тех же 32 деталей, верхняя сторона | EasyEDA Pro, PCB1 → Pick and Place, 26.11.2026 |
+
+В BOM и CPL нет непаяемых позиций: C10, C11, C12, JP1, гребёнка J1.
+
+**Сборка JLCPCB при толщине 1,2 мм:** дешёвая сборка Economic — не больше 30 плат (калькулятор, 26.11.2026);
+больше — только Standard, с технологическими полями.
 
 Исходники: проект EasyEDA — `hardware/easyeda/UlpanIR.epro2` (схема, PCB1 и копии разводок v1–v3),
 схема в PDF/SVG/PNG и список соединений — `hardware/schematic/UlpanIR_schematic_easyeda.*`,
