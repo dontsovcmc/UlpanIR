@@ -2,7 +2,8 @@
 
 ИК-пульт на две кнопки в корпусе селфи-брелока (донор — AB Shutter3). Первая цель — включать и
 выключать проектор Optoma X341. Питание — CR2032. Коды и настройки задаются с компьютера: веб-страница
-в Chrome или Edge подключается к пульту по Bluetooth (Web Bluetooth).
+в Chrome или Edge подключается к пульту по Bluetooth (Web Bluetooth):
+https://dontsovcmc.github.io/UlpanIR/
 
 ## Как работает
 
