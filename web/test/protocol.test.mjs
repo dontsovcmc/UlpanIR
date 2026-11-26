@@ -3,8 +3,9 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
   UUID, DEVICE_REJECTED, defaults, validate, encodeBlock, decodeBlock, decodeStatus, testPayload, necBytes, hex, parseHex,
-  errorText, Session,
+  Session,
 } from '../protocol.js';
+import { STRINGS, LANGS, DEFAULT_LANG, t } from '../i18n.js';
 
 // Example from docs/ble_protocol.md: A = 0x32/0x02, B = 0x32/0x03, 3 frames/s, full frame.
 const EXAMPLE = [0x01, 0x01, 0x32, 0x00, 0x02, 0x01, 0x32, 0x00, 0x03, 0x03, 0x00];
@@ -41,35 +42,36 @@ test('decode: DataView from Web Bluetooth', () => {
 });
 
 test('decode: wrong version or length is rejected', () => {
-  assert.throws(() => decodeBlock(Uint8Array.from([2, ...EXAMPLE.slice(1)])), /версию/);
-  assert.throws(() => decodeBlock(Uint8Array.from(EXAMPLE.slice(0, 10))), /длина/);
+  assert.throws(() => decodeBlock(Uint8Array.from([2, ...EXAMPLE.slice(1)])), { message: 'errBlockVersion' });
+  assert.throws(() => decodeBlock(Uint8Array.from(EXAMPLE.slice(0, 10))), { message: 'errBlockLength' });
 });
 
 test('validate: spec scenario, 50 frames/s is not sent', () => {
   const s = exampleSettings();
   s.repeatHz = 50;
-  assert.equal(validate(s), 'Частота повторов — от 1 до 10 кадров/с');
+  assert.deepEqual(validate(s), { key: 'errRepeatHz', params: {} });
+  assert.equal(t('ru', 'errRepeatHz'), 'Частота повторов — от 1 до 10 кадров/с');
 });
 
 test('validate: ranges', () => {
   const s = exampleSettings();
   assert.equal(validate(s), null);
   s.repeatHz = 0;
-  assert.match(validate(s), /Частота/);
+  assert.equal(validate(s).key, 'errRepeatHz');
   s.repeatHz = 10;
   assert.equal(validate(s), null);
   s.a.address = 0x132; // 8-bit address too large
-  assert.match(validate(s), /Кнопка A: адрес больше 0xFF/);
+  assert.deepEqual(validate(s), { key: 'errAddress8', params: { button: 'A' } });
   s.a.extended = true;
   assert.equal(validate(s), null);
   s.a.command = 0x100;
-  assert.match(validate(s), /Кнопка A: команда/);
+  assert.equal(validate(s).key, 'errCommand');
   s.a.command = 0x10;
   s.b.address = NaN; // not a hex number in the form
-  assert.match(validate(s), /Кнопка B: адрес и команда — шестнадцатеричные/);
+  assert.deepEqual(validate(s), { key: 'errHex', params: { button: 'B' } });
   s.b.address = 0x32;
   s.repeatMode = 2;
-  assert.match(validate(s), /Вид повтора/);
+  assert.equal(validate(s).key, 'errRepeatMode');
 });
 
 test('validate: unassigned button fields are not checked', () => {
@@ -78,9 +80,36 @@ test('validate: unassigned button fields are not checked', () => {
   assert.equal(validate(s), null);
 });
 
-test('device: one rejection code, generic text', () => {
+test('device: one rejection code', () => {
   assert.equal(DEVICE_REJECTED, 0x80);
-  assert.match(errorText(), /не принял/);
+});
+
+test('i18n: English by default, Russian available', () => {
+  assert.equal(DEFAULT_LANG, 'en');
+  assert.deepEqual(Object.keys(LANGS), ['en', 'ru']);
+  assert.equal(t('en', 'connect'), 'Connect');
+  assert.equal(t('ru', 'connect'), 'Подключить');
+});
+
+test('i18n: every language has every key with the same placeholders', () => {
+  const ph = (s) => [...s.matchAll(/\{(\w+)\}/g)].map((m) => m[1]).sort().join(',');
+  const en = STRINGS.en;
+  for (const lang of Object.keys(LANGS)) {
+    assert.deepEqual(Object.keys(STRINGS[lang]).sort(), Object.keys(en).sort(), lang);
+    for (const k of Object.keys(en)) assert.equal(ph(STRINGS[lang][k]), ph(en[k]), `${lang}.${k}`);
+  }
+});
+
+test('i18n: placeholders, fallback to English', () => {
+  assert.equal(t('en', 'codeSent', { button: 'B' }), 'Code B sent');
+  assert.equal(t('ru', 'errHex', { button: 'A' }).startsWith('Кнопка A:'), true);
+  assert.equal(t('de', 'connect'), 'Connect');
+  assert.equal(t('en', 'noSuchKey'), 'noSuchKey');
+});
+
+test('i18n: every key used by validate exists', () => {
+  for (const k of ['errHex', 'errAddress8', 'errAddress16', 'errCommand', 'errRepeatHz', 'errRepeatMode',
+    'errBlockLength', 'errBlockVersion', 'errStatusLength']) assert.ok(k in STRINGS.en, k);
 });
 
 test('status: version and battery volts', () => {

@@ -16,12 +16,8 @@ export const REPEAT_HZ_MIN = 1;
 export const REPEAT_HZ_MAX = 10;
 
 // The remote answers only "ok" or "rejected" (0x80); the page checks the values itself and names the reason,
-// the remote writes its reason to the developer log (UART).
+// the remote writes its reason to the developer log (UART). Texts are keys of i18n.js.
 export const DEVICE_REJECTED = 0x80;
-
-export function errorText() {
-  return 'Пульт не принял данные. Проверьте значения и повторите; если не помогло — версии страницы и прошивки не совпадают';
-}
 
 /** Defaults of a clean remote: nothing assigned, 3 frames/s, full frame. */
 export function defaults() {
@@ -29,20 +25,19 @@ export function defaults() {
   return { a: { ...none }, b: { ...none }, repeatHz: 3, repeatMode: 0 };
 }
 
-/** The firmware checks (settings_parse) plus form input, with the reason in words; null if valid. */
+/** The firmware checks (settings_parse) plus form input: null if valid, else { key, params } of i18n.js. */
 export function validate(s) {
   for (const k of ['a', 'b']) {
-    const c = s[k], name = `Кнопка ${k.toUpperCase()}`;
+    const c = s[k], params = { button: k.toUpperCase() };
     if (!c.assigned) continue;
-    if (!Number.isInteger(c.address) || !Number.isInteger(c.command))
-      return `${name}: адрес и команда — шестнадцатеричные числа, например 0x32`;
-    if (!c.extended && c.address > 0xff) return `${name}: адрес больше 0xFF — включите «16 бит» или исправьте адрес`;
-    if (c.address < 0 || c.address > 0xffff) return `${name}: адрес — от 0x0000 до 0xFFFF`;
-    if (c.command < 0 || c.command > 0xff) return `${name}: команда — от 0x00 до 0xFF`;
+    if (!Number.isInteger(c.address) || !Number.isInteger(c.command)) return { key: 'errHex', params };
+    if (!c.extended && c.address > 0xff) return { key: 'errAddress8', params };
+    if (c.address < 0 || c.address > 0xffff) return { key: 'errAddress16', params };
+    if (c.command < 0 || c.command > 0xff) return { key: 'errCommand', params };
   }
   if (!Number.isInteger(s.repeatHz) || s.repeatHz < REPEAT_HZ_MIN || s.repeatHz > REPEAT_HZ_MAX)
-    return 'Частота повторов — от 1 до 10 кадров/с';
-  if (s.repeatMode !== 0 && s.repeatMode !== 1) return 'Вид повтора — «полный кадр» или «код повтора NEC»';
+    return { key: 'errRepeatHz', params: {} };
+  if (s.repeatMode !== 0 && s.repeatMode !== 1) return { key: 'errRepeatMode', params: {} };
   return null;
 }
 
@@ -72,17 +67,17 @@ function decodeButton(b, off) {
   };
 }
 
-/** Decodes a block read from the remote; throws on a block this page does not understand. */
+/** Decodes a block read from the remote; throws Error(i18n key) on a block this page does not understand. */
 export function decodeBlock(bytes) {
   const b = bytes instanceof DataView ? new Uint8Array(bytes.buffer, bytes.byteOffset, bytes.byteLength) : bytes;
-  if (b.length !== BLOCK_LEN) throw new Error('Неверная длина настроек: версии страницы и прошивки не совпадают');
-  if (b[0] !== VERSION) throw new Error('Пульт хранит другую версию настроек: обновите страницу или прошивку');
+  if (b.length !== BLOCK_LEN) throw new Error('errBlockLength');
+  if (b[0] !== VERSION) throw new Error('errBlockVersion');
   return { a: decodeButton(b, 1), b: decodeButton(b, 5), repeatHz: b[9], repeatMode: b[10] };
 }
 
 export function decodeStatus(bytes) {
   const b = bytes instanceof DataView ? new Uint8Array(bytes.buffer, bytes.byteOffset, bytes.byteLength) : bytes;
-  if (b.length < 6) throw new Error('Неверная длина статуса: версии страницы и прошивки не совпадают');
+  if (b.length < 6) throw new Error('errStatusLength');
   return { proto: b[0], firmware: `${b[1]}.${b[2]}.${b[3]}`, batteryV: (b[4] | (b[5] << 8)) / 1000 };
 }
 

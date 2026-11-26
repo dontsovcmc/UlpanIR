@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="ru">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Настройка пульта UlpanIR</title>
+<title>UlpanIR remote setup</title>
 <style>
   :root {
     --bg: #f6f7f9; --card: #ffffff; --text: #1b1f24; --muted: #5b6573; --line: #d8dde4;
@@ -18,6 +18,7 @@
   * { box-sizing: border-box; }
   body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif; }
   main { max-width: 760px; margin: 0 auto; padding: 16px; }
+  header { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
   h1 { font-size: 1.4rem; margin: 8px 0 16px; }
   h2 { font-size: 1.05rem; margin: 0 0 12px; }
   .card { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 16px; margin-bottom: 16px; }
@@ -34,11 +35,15 @@
   }
   button.primary { background: var(--accent); color: var(--accent-text); border-color: var(--accent); }
   button:disabled { opacity: .45; cursor: not-allowed; }
+  .lang { position: relative; flex: none; margin-top: 4px; }
+  #langBtn { font-size: 1.4rem; line-height: 1; padding: 6px 9px; }
+  #langSelect { position: absolute; right: 0; top: calc(100% + 4px); width: auto; min-width: 140px; z-index: 2; }
   .mono { font-family: ui-monospace, Menlo, monospace; }
   .muted { color: var(--muted); font-size: .9rem; }
   #msg { min-height: 1.5em; margin: 12px 0 0; }
   #msg.ok { color: var(--ok); } #msg.err { color: var(--err); }
   #unsupported { background: var(--warn-bg); border-color: var(--err); }
+  fieldset { border: 0; padding: 0; margin: 0; }
   dialog { border: 1px solid var(--line); border-radius: 10px; background: var(--card); color: var(--text); max-width: 360px; }
   dialog::backdrop { background: rgba(0,0,0,.45); }
   [hidden] { display: none !important; }
@@ -46,99 +51,142 @@
 </head>
 <body>
 <main>
-  <h1>Настройка ИК-пульта UlpanIR</h1>
+  <header>
+    <h1 data-i18n="title">UlpanIR remote setup</h1>
+    <div class="lang">
+      <button type="button" id="langBtn" aria-haspopup="listbox" aria-expanded="false">🌐</button>
+      <select id="langSelect" size="2" hidden></select>
+    </div>
+  </header>
 
   <div class="card" id="unsupported" hidden></div>
 
   <div class="card">
-    <h2>Пульт</h2>
-    <p class="muted">Зажмите обе кнопки пульта на 4 секунды — индикатор начнёт мигать. Затем нажмите «Подключить»
-      и выберите «IR-Remote-…».</p>
+    <h2 data-i18n="remote">Remote</h2>
+    <p class="muted" data-i18n="howToConnect"></p>
     <div class="row">
-      <button class="primary" id="connect" disabled>Подключить</button>
-      <button id="disconnect" disabled>Отключить</button>
-      <button id="read" disabled>Прочитать</button>
+      <button class="primary" id="connect" data-i18n="connect" disabled>Connect</button>
+      <button id="disconnect" data-i18n="disconnect" disabled>Disconnect</button>
+      <button id="read" data-i18n="read" disabled>Read</button>
     </div>
-    <p class="muted" id="device">Не подключено</p>
+    <p class="muted" id="device"></p>
   </div>
 
   <form class="card" id="form">
-    <h2>Коды кнопок</h2>
+    <h2 data-i18n="buttonCodes">Button codes</h2>
     <div class="grid">
-      <fieldset style="border:0;padding:0;margin:0" data-btn="a">
-        <legend><b>Кнопка A</b></legend>
-        <label class="inline"><input type="checkbox" name="assigned"> назначен код</label>
-        <label>Адрес NEC (hex) <input type="text" name="address" placeholder="0x32" autocomplete="off"></label>
-        <label class="inline"><input type="checkbox" name="extended"> 16-битный адрес</label>
-        <label>Команда (hex) <input type="text" name="command" placeholder="0x02" autocomplete="off"></label>
+      <fieldset data-btn="a">
+        <legend><b data-i18n="buttonA">Button A</b></legend>
+        <label class="inline"><input type="checkbox" name="assigned"> <span data-i18n="assigned"></span></label>
+        <label><span data-i18n="address"></span> <input type="text" name="address" placeholder="0x32" autocomplete="off"></label>
+        <label class="inline"><input type="checkbox" name="extended"> <span data-i18n="extended"></span></label>
+        <label><span data-i18n="command"></span> <input type="text" name="command" placeholder="0x02" autocomplete="off"></label>
         <p class="muted mono" data-preview>—</p>
-        <button type="button" data-test="0" disabled>Отправить код A</button>
+        <button type="button" data-test="0" data-i18n="sendA" disabled>Send code A</button>
       </fieldset>
-      <fieldset style="border:0;padding:0;margin:0" data-btn="b">
-        <legend><b>Кнопка B</b></legend>
-        <label class="inline"><input type="checkbox" name="assigned"> назначен код</label>
-        <label>Адрес NEC (hex) <input type="text" name="address" placeholder="0x32" autocomplete="off"></label>
-        <label class="inline"><input type="checkbox" name="extended"> 16-битный адрес</label>
-        <label>Команда (hex) <input type="text" name="command" placeholder="0x03" autocomplete="off"></label>
+      <fieldset data-btn="b">
+        <legend><b data-i18n="buttonB">Button B</b></legend>
+        <label class="inline"><input type="checkbox" name="assigned"> <span data-i18n="assigned"></span></label>
+        <label><span data-i18n="address"></span> <input type="text" name="address" placeholder="0x32" autocomplete="off"></label>
+        <label class="inline"><input type="checkbox" name="extended"> <span data-i18n="extended"></span></label>
+        <label><span data-i18n="command"></span> <input type="text" name="command" placeholder="0x03" autocomplete="off"></label>
         <p class="muted mono" data-preview>—</p>
-        <button type="button" data-test="1" disabled>Отправить код B</button>
+        <button type="button" data-test="1" data-i18n="sendB" disabled>Send code B</button>
       </fieldset>
     </div>
-    <h2 style="margin-top:16px">Удержание кнопки</h2>
+    <h2 style="margin-top:16px" data-i18n="hold">Holding a button</h2>
     <div class="grid">
-      <label>Повторов в секунду (1–10) <input type="number" name="repeatHz" min="1" max="10" step="1" value="3"></label>
-      <label>Вид повтора
+      <label><span data-i18n="repeatHz"></span> <input type="number" name="repeatHz" min="1" max="10" step="1" value="3"></label>
+      <label><span data-i18n="repeatMode"></span>
         <select name="repeatMode">
-          <option value="0">полный кадр</option>
-          <option value="1">код повтора NEC</option>
+          <option value="0" data-i18n="fullFrame">full frame</option>
+          <option value="1" data-i18n="necRepeat">NEC repeat code</option>
         </select>
       </label>
     </div>
-    <p class="muted">Блок настроек: <span class="mono" id="block">—</span></p>
-    <div class="row"><button class="primary" type="submit" id="write" disabled>Записать</button></div>
+    <p class="muted"><span data-i18n="block"></span> <span class="mono" id="block">—</span></p>
+    <div class="row"><button class="primary" type="submit" id="write" data-i18n="write" disabled>Save</button></div>
     <p id="msg" role="status"></p>
   </form>
 
-  <p class="muted">Работает в Chrome и Edge (Windows, macOS, Linux, Android) по HTTPS.
-    Протокол — <span class="mono">docs/ble_protocol.md</span>.</p>
+  <p class="muted" data-i18n="footer"></p>
 </main>
 
 <dialog id="longSession">
-  <p><b>Пульт отключится через <span id="countdown">60</span> с</b></p>
-  <p class="muted">Сессия длится уже долго. Продолжить настройку?</p>
+  <p><b id="longTitle"></b></p>
+  <p class="muted" data-i18n="longText"></p>
   <div class="row">
-    <button class="primary" id="continue">Продолжить</button>
-    <button id="stop">Отключить</button>
+    <button class="primary" id="continue" data-i18n="continue">Continue</button>
+    <button id="stop" data-i18n="disconnect">Disconnect</button>
   </div>
 </dialog>
 
 <script type="module">
 import {
   UUID, TIMERS, Session, defaults, validate, encodeBlock, decodeBlock, decodeStatus, testPayload, necBytes,
-  hex, parseHex, errorText,
+  hex, parseHex,
 } from './protocol.js';
+import { DEFAULT_LANG, LANGS, t } from './i18n.js';
 
 const $ = (s) => document.querySelector(s);
 const form = $('#form');
-const msg = (text, kind = '') => { $('#msg').textContent = text; $('#msg').className = kind; };
+
+// ---- language: English by default, the globe opens the list; the choice is remembered in this browser ----
+let lang = DEFAULT_LANG;
+try { const saved = localStorage.getItem('ulpanir.lang'); if (saved in LANGS) lang = saved; } catch (e) { /* storage blocked */ }
+const tr = (key, params) => t(lang, key, params);
+
+// Dynamic texts are kept as keys, so switching the language re-renders them.
+let msgState = { key: '', params: {}, kind: '' };
+let deviceState = { key: 'notConnected', params: {} };
+let countdown = 0;
+function msg(key, kind = '', params = {}) { msgState = { key, params, kind }; renderDynamic(); }
+function deviceLine(key, params = {}) { deviceState = { key, params }; renderDynamic(); }
+
+function renderDynamic() {
+  $('#msg').textContent = msgState.key ? tr(msgState.key, msgState.params) : '';
+  $('#msg').className = msgState.kind;
+  $('#device').textContent = tr(deviceState.key, deviceState.params);
+  $('#longTitle').textContent = tr('longTitle', { seconds: countdown });
+  if (problem) $('#unsupported').textContent = tr(problem);
+  preview();
+}
+
+function applyLang() {
+  document.documentElement.lang = lang;
+  document.title = tr('title');
+  document.querySelectorAll('[data-i18n]').forEach((el) => { el.textContent = tr(el.dataset.i18n); });
+  $('#langBtn').title = tr('language');
+  $('#langBtn').setAttribute('aria-label', tr('language'));
+  renderDynamic();
+}
+
+const langSelect = $('#langSelect');
+for (const [code, name] of Object.entries(LANGS)) langSelect.add(new Option(name, code));
+function closeLang() { langSelect.hidden = true; $('#langBtn').setAttribute('aria-expanded', 'false'); }
+$('#langBtn').addEventListener('click', () => {
+  langSelect.value = lang;
+  langSelect.hidden = !langSelect.hidden;
+  $('#langBtn').setAttribute('aria-expanded', String(!langSelect.hidden));
+  if (!langSelect.hidden) langSelect.focus();
+});
+langSelect.addEventListener('change', () => {
+  lang = langSelect.value;
+  try { localStorage.setItem('ulpanir.lang', lang); } catch (e) { /* storage blocked */ }
+  closeLang();
+  applyLang();
+});
+langSelect.addEventListener('keydown', (e) => { if (e.key === 'Escape' || e.key === 'Enter') closeLang(); });
+document.addEventListener('click', (e) => { if (!e.target.closest('.lang')) closeLang(); });
 
 // ?fast — debug: ping 3 s, warning after 9 s, answer within 6 s (task 4.4 checks the three outcomes quickly).
 const timers = new URLSearchParams(location.search).has('fast')
   ? { pingMs: 3000, warnAfterMs: 9000, answerMs: 6000 } : TIMERS;
 
 // 4.1 browser support
-function supportProblem() {
-  if (!('bluetooth' in navigator)) return 'Браузер не поддерживает Web Bluetooth — откройте в Chrome или Edge.';
-  if (!window.isSecureContext) return 'Страница открыта не по HTTPS — Web Bluetooth работает только по HTTPS.';
-  return null;
-}
-const problem = supportProblem();
-if (problem) {
-  $('#unsupported').textContent = problem;
-  $('#unsupported').hidden = false;
-} else {
-  $('#connect').disabled = false;
-}
+const problem = !('bluetooth' in navigator) ? 'noBluetooth' : !window.isSecureContext ? 'noHttps' : null;
+$('#unsupported').hidden = !problem;
+$('#connect').disabled = !!problem;
 
 // ---- form <-> settings ----
 function readForm() {
@@ -171,6 +219,8 @@ function fillForm(s) {
   preview();
 }
 
+const errText = (err) => tr(err.key, err.params);
+
 // 4.3 preview of the block and of the NEC data bytes
 function preview() {
   const s = readForm();
@@ -178,13 +228,12 @@ function preview() {
     const c = s[k], p = form.querySelector(`[data-btn=${k}] [data-preview]`);
     const valid = c.assigned && !Number.isNaN(c.address) && !Number.isNaN(c.command) &&
       c.address <= (c.extended ? 0xffff : 0xff) && c.command <= 0xff;
-    p.textContent = !c.assigned ? 'не назначена — пульт не излучает' : valid ? 'кадр NEC: ' + hex(necBytes(c)) : '—';
+    p.textContent = !c.assigned ? tr('notAssignedPreview') : valid ? tr('necFrame', { bytes: hex(necBytes(c)) }) : '—';
   }
   const err = validate(s);
-  $('#block').textContent = err ? err : hex(encodeBlock(s));
+  $('#block').textContent = err ? errText(err) : hex(encodeBlock(s));
 }
 form.addEventListener('input', preview);
-fillForm(defaults());
 
 // ---- Bluetooth ----
 let device = null, ch = {}, queue = Promise.resolve();
@@ -200,25 +249,24 @@ function setConnected(on) {
   form.querySelectorAll('[data-test]').forEach((b) => (b.disabled = !on));
 }
 
-function deviceError(e) {
-  // The remote says only "rejected"; the reason is in its UART log. The form is validated before sending.
-  return `${errorText()} (${e?.message ?? e})`;
-}
+// The remote says only "rejected"; the reason is in its UART log. The form is validated before sending.
+const deviceError = (e) => msg('deviceRejected', 'err', { error: e?.message ?? e });
 
 async function readAll() {
   const [cfg, st] = await gatt(async () => [await ch.config.readValue(), await ch.status.readValue()]);
   const s = decodeBlock(cfg), status = decodeStatus(st);
   fillForm(s);
-  $('#device').textContent =
-    `${device.name ?? 'пульт'} · прошивка ${status.firmware} · батарейка ${status.batteryV.toFixed(2)} В`;
+  deviceLine('deviceLine', { name: device.name ?? tr('remoteName'), firmware: status.firmware, volts: status.batteryV.toFixed(2) });
 }
+// decodeBlock/decodeStatus throw Error(i18n key)
+const readError = (e) => (e?.message?.startsWith('err') ? msg(e.message, 'err') : deviceError(e));
 
 $('#connect').addEventListener('click', async () => {
   try {
     msg('');
     device = await navigator.bluetooth.requestDevice({ filters: [{ services: [UUID.service] }] });
     device.addEventListener('gattserverdisconnected', onDisconnected);
-    $('#device').textContent = 'Подключение…';
+    deviceLine('connecting');
     const server = await device.gatt.connect();
     const svc = await server.getPrimaryService(UUID.service);
     for (const k of ['config', 'status', 'ping', 'test']) ch[k] = await svc.getCharacteristic(UUID[k]);
@@ -226,37 +274,38 @@ $('#connect').addEventListener('click', async () => {
     session.start(Date.now());
     sessionTimer = setInterval(onTick, 1000);
     await readAll();
-    msg('Подключено, настройки прочитаны', 'ok');
+    msg('connectedRead', 'ok');
   } catch (e) {
-    if (e?.name === 'NotFoundError') { msg(''); $('#device').textContent = 'Не подключено'; return; } // chooser closed
-    msg(`Не удалось подключиться: ${e?.message ?? e}`, 'err');
+    if (e?.name === 'NotFoundError') { msg(''); deviceLine('notConnected'); return; } // chooser closed
+    if (e?.message?.startsWith('err')) msg(e.message, 'err');
+    else msg('connectFailed', 'err', { error: e?.message ?? e });
     disconnect();
   }
 });
 
 $('#read').addEventListener('click', async () => {
-  try { await readAll(); msg('Настройки прочитаны', 'ok'); } catch (e) { msg(deviceError(e), 'err'); }
+  try { await readAll(); msg('settingsRead', 'ok'); } catch (e) { readError(e); }
 });
 
 form.addEventListener('submit', async (ev) => {
   ev.preventDefault();
   const s = readForm(), err = validate(s);
-  if (err) { msg(err, 'err'); return; } // spec: the page does not send an invalid value
+  if (err) { msg(err.key, 'err', err.params); return; } // spec: the page does not send an invalid value
   try {
     await gatt(() => ch.config.writeValueWithResponse(encodeBlock(s)));
-    msg('Сохранено', 'ok');
-  } catch (e) { msg(deviceError(e), 'err'); }
+    msg('saved', 'ok');
+  } catch (e) { deviceError(e); }
 });
 
 // 4.5 test frame with the code from the form, saved or not
 form.querySelectorAll('[data-test]').forEach((b) => b.addEventListener('click', async () => {
   const button = Number(b.dataset.test), s = readForm(), err = validate(s);
-  if (err) { msg(err, 'err'); return; }
-  if (!s[button ? 'b' : 'a'].assigned) { msg('Кнопке не назначен код', 'err'); return; }
+  if (err) { msg(err.key, 'err', err.params); return; }
+  if (!s[button ? 'b' : 'a'].assigned) { msg('notAssigned', 'err'); return; }
   try {
     await gatt(() => ch.test.writeValueWithResponse(testPayload(button, s)));
-    msg(`Код ${button ? 'B' : 'A'} отправлен`, 'ok');
-  } catch (e) { msg(deviceError(e), 'err'); }
+    msg('codeSent', 'ok', { button: button ? 'B' : 'A' });
+  } catch (e) { deviceError(e); }
 }));
 
 // 4.4 ping and the long-session dialog
@@ -264,14 +313,14 @@ function onTick() {
   const action = session.tick(Date.now());
   if (action === 'ping') gatt(() => ch.ping.writeValueWithoutResponse(Uint8Array.of(0))).catch(() => {});
   if (action === 'warn') showWarning();
-  if (action === 'disconnect') { hideWarning(); disconnect(); msg('Отключено: нет ответа 60 с', 'err'); }
+  if (action === 'disconnect') { hideWarning(); disconnect(); msg('disconnectedNoAnswer', 'err'); }
 }
 
 function showWarning() {
-  let left = Math.round(timers.answerMs / 1000);
-  $('#countdown').textContent = left;
+  countdown = Math.round(timers.answerMs / 1000);
+  renderDynamic();
   clearInterval(countdownTimer);
-  countdownTimer = setInterval(() => { $('#countdown').textContent = Math.max(0, --left); }, 1000);
+  countdownTimer = setInterval(() => { countdown = Math.max(0, countdown - 1); renderDynamic(); }, 1000);
   $('#longSession').showModal();
 }
 function hideWarning() {
@@ -279,9 +328,9 @@ function hideWarning() {
   if ($('#longSession').open) $('#longSession').close();
 }
 $('#continue').addEventListener('click', () => { session.continue(Date.now()); hideWarning(); });
-$('#stop').addEventListener('click', () => { hideWarning(); disconnect(); msg('Отключено', ''); });
+$('#stop').addEventListener('click', () => { hideWarning(); disconnect(); msg('disconnected'); });
 $('#longSession').addEventListener('cancel', (e) => e.preventDefault()); // Esc must not count as an answer
-$('#disconnect').addEventListener('click', () => { disconnect(); msg('Отключено', ''); });
+$('#disconnect').addEventListener('click', () => { disconnect(); msg('disconnected'); });
 
 function disconnect() {
   session.stop();
@@ -294,8 +343,11 @@ function onDisconnected() {
   clearInterval(sessionTimer);
   hideWarning();
   setConnected(false);
-  $('#device').textContent = 'Не подключено (пульт выключится сам через 60 с)';
+  deviceLine('notConnectedAuto');
 }
+
+fillForm(defaults());
+applyLang();
 </script>
 </body>
 </html>
