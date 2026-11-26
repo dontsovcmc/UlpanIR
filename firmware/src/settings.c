@@ -68,41 +68,15 @@ uint16_t settings_crc16(const uint8_t *data, size_t len) {
     return crc;
 }
 
-void settings_slot_pack(uint32_t counter, const settings_t *s, uint8_t out[SETTINGS_SLOT_LEN]) {
-    for (int i = 0; i < 4; i++) out[i] = (uint8_t)(counter >> (8 * i));
-    settings_serialize(s, out + 4);
-    wr16(out + 15, settings_crc16(out, 15));
+void settings_record_pack(const settings_t *s, uint8_t out[SETTINGS_RECORD_LEN]) {
+    settings_serialize(s, out);
+    wr16(out + SETTINGS_BLOCK_LEN, settings_crc16(out, SETTINGS_BLOCK_LEN));
 }
 
-/* Valid slot: CRC matches, counter is not the erased value, block passes validation. */
-static bool slot_read(const uint8_t *p, settings_t *s, uint32_t *counter) {
-    if (settings_crc16(p, 15) != rd16(p + 15)) return false;
-    uint32_t c = (uint32_t)p[0] | ((uint32_t)p[1] << 8) | ((uint32_t)p[2] << 16) | ((uint32_t)p[3] << 24);
-    if (c == 0xFFFFFFFFu) return false;
-    if (settings_parse(p + 4, SETTINGS_BLOCK_LEN, s) != SETTINGS_OK) return false;
-    *counter = c;
-    return true;
-}
-
-int settings_pick(const uint8_t slot0[SETTINGS_SLOT_LEN], const uint8_t slot1[SETTINGS_SLOT_LEN],
-                  settings_t *out, uint32_t *counter) {
-    settings_t s0, s1;
-    uint32_t c0 = 0, c1 = 0;
-    bool v0 = slot_read(slot0, &s0, &c0);
-    bool v1 = slot_read(slot1, &s1, &c1);
-    if (v0 && (!v1 || c0 >= c1)) {
-        *out = s0;
-        *counter = c0;
-        return 0;
-    }
-    if (v1) {
-        *out = s1;
-        *counter = c1;
-        return 1;
-    }
+bool settings_record_unpack(const uint8_t in[SETTINGS_RECORD_LEN], settings_t *out) {
+    if (settings_crc16(in, SETTINGS_BLOCK_LEN) == rd16(in + SETTINGS_BLOCK_LEN) &&
+        settings_parse(in, SETTINGS_BLOCK_LEN, out) == SETTINGS_OK)
+        return true;
     settings_defaults(out);
-    *counter = 0;
-    return -1;
+    return false;
 }
-
-int settings_next_slot(int best) { return best == 0 ? 1 : 0; }

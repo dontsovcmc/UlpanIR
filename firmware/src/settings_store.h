@@ -1,11 +1,11 @@
-/* Settings in CH592 DataFlash: two slots, see docs/ble_protocol.md "Хранение во флеше". */
+/* Settings in CH592 DataFlash: one record with CRC, see docs/ble_protocol.md "Хранение во флеше". */
 #ifndef SETTINGS_STORE_H
 #define SETTINGS_STORE_H
 #include "settings.h"
 
-/* Reads both slots and returns the newest valid block, or defaults on a clean chip. */
+/* Reads the record; defaults (nothing assigned) on a clean chip or a damaged record. */
 void settings_load(settings_t *s);
-/* Writes into the slot that is not the current best, verifies it; SETTINGS_OK or SETTINGS_ERR_FLASH.
- * On failure the previous settings stay in flash and stay the best slot. */
+/* Erases, writes and verifies the record; SETTINGS_OK or SETTINGS_ERR_FLASH. A write interrupted by power
+ * loss leaves a record with a bad CRC: the remote starts unconfigured and is configured again. */
 int settings_save(const settings_t *s);
 #endif

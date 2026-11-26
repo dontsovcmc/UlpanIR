@@ -1,4 +1,4 @@
-/* Host tests for the settings block v1 and the two-slot flash record (docs/ble_protocol.md). */
+/* Host tests for the settings block v1 and the flash record (one copy + CRC) (docs/ble_protocol.md). */
 #include "settings.h"
 #include <stdio.h>
 #include <string.h>
@@ -95,60 +95,41 @@ static void test_crc(void) {
     CHECK(settings_crc16((const uint8_t *)"123456789", 9) == 0x29B1);
 }
 
-static void test_slots(void) {
+static void test_record(void) {
     settings_t s, out;
     settings_parse(EXAMPLE, sizeof(EXAMPLE), &s);
-    uint8_t s0[SETTINGS_SLOT_LEN], s1[SETTINGS_SLOT_LEN], erased[SETTINGS_SLOT_LEN];
+    uint8_t rec[SETTINGS_RECORD_LEN], erased[SETTINGS_RECORD_LEN];
     memset(erased, 0xFF, sizeof(erased));
-    uint32_t cnt = 0;
 
-    /* clean flash: defaults, write goes to slot 0 with counter 1 */
-    CHECK(settings_pick(erased, erased, &out, &cnt) == -1);
-    CHECK(!out.a.assigned && out.repeat_hz == 3 && cnt == 0);
-    CHECK(settings_next_slot(-1) == 0);
+    /* clean flash: not valid, defaults (nothing assigned) */
+    CHECK(!settings_record_unpack(erased, &out));
+    CHECK(!out.a.assigned && !out.b.assigned && out.repeat_hz == 3);
 
-    settings_slot_pack(1, &s, s0);
-    CHECK(settings_pick(s0, erased, &out, &cnt) == 0 && cnt == 1);
-    CHECK(memcmp(&out, &s, sizeof(s)) == 0);
-    CHECK(settings_next_slot(0) == 1);
+    /* layout: block, then CRC LE over the block */
+    settings_record_pack(&s, rec);
+    CHECK(memcmp(rec, EXAMPLE, SETTINGS_BLOCK_LEN) == 0);
+    uint16_t c = settings_crc16(rec, SETTINGS_BLOCK_LEN);
+    CHECK(rec[11] == (uint8_t)c && rec[12] == (uint8_t)(c >> 8));
+    CHECK(settings_record_unpack(rec, &out) && memcmp(&out, &s, sizeof(s)) == 0);
 
-    settings_t s2 = s;
-    s2.a.command = 0x55;
-    settings_slot_pack(2, &s2, s1);
-    CHECK(settings_pick(s0, s1, &out, &cnt) == 1 && cnt == 2 && out.a.command == 0x55);
-
-    /* interrupted write of slot 0 (counter 3): torn record falls back to slot 1 */
-    uint8_t torn[SETTINGS_SLOT_LEN];
-    settings_t s3 = s2;
-    s3.b.command = 0x66;
-    settings_slot_pack(3, &s3, torn);
-    memset(torn + 9, 0xFF, SETTINGS_SLOT_LEN - 9);
-    CHECK(settings_pick(torn, s1, &out, &cnt) == 1 && cnt == 2 && out.b.command == 0x03);
+    /* interrupted write: the tail is still erased -> clean remote, never a mix of old and new codes */
+    uint8_t torn[SETTINGS_RECORD_LEN];
+    memcpy(torn, rec, sizeof(torn));
+    memset(torn + 5, 0xFF, SETTINGS_RECORD_LEN - 5);
+    CHECK(!settings_record_unpack(torn, &out) && !out.a.assigned && !out.b.assigned);
 
     /* single corrupted bit */
-    uint8_t bad[SETTINGS_SLOT_LEN];
-    memcpy(bad, s1, sizeof(bad));
-    bad[6] ^= 0x01;
-    CHECK(settings_pick(s0, bad, &out, &cnt) == 0 && cnt == 1);
+    memcpy(torn, rec, sizeof(torn));
+    torn[3] ^= 0x01;
+    CHECK(!settings_record_unpack(torn, &out) && !out.a.assigned);
 
-    /* valid CRC but invalid block (e.g. future version) is not used */
-    uint8_t inv[SETTINGS_SLOT_LEN];
-    memcpy(inv, s1, sizeof(inv));
-    inv[4] = 2; /* version */
-    uint16_t c = settings_crc16(inv, SETTINGS_SLOT_LEN - 2);
-    inv[15] = (uint8_t)c;
-    inv[16] = (uint8_t)(c >> 8);
-    CHECK(settings_pick(s0, inv, &out, &cnt) == 0);
-
-    /* counter 0xFFFFFFFF is never valid, even with a matching CRC */
-    settings_slot_pack(0xFFFFFFFFu, &s, inv);
-    CHECK(settings_pick(inv, erased, &out, &cnt) == -1);
-
-    /* slot layout: counter LE, block, CRC LE over bytes 0..14 */
-    settings_slot_pack(0x01020304u, &s, s0);
-    CHECK(s0[0] == 0x04 && s0[3] == 0x01 && memcmp(s0 + 4, EXAMPLE, SETTINGS_BLOCK_LEN) == 0);
-    c = settings_crc16(s0, 15);
-    CHECK(s0[15] == (uint8_t)c && s0[16] == (uint8_t)(c >> 8));
+    /* matching CRC but a block this firmware does not accept (future version) */
+    memcpy(torn, rec, sizeof(torn));
+    torn[0] = 2;
+    c = settings_crc16(torn, SETTINGS_BLOCK_LEN);
+    torn[11] = (uint8_t)c;
+    torn[12] = (uint8_t)(c >> 8);
+    CHECK(!settings_record_unpack(torn, &out) && !out.a.assigned);
 }
 
 int main(void) {
@@ -158,7 +139,7 @@ int main(void) {
     test_serialize_example();
     test_validation();
     test_crc();
-    test_slots();
+    test_record();
     if (fails) {
         printf("test_settings: %d failure(s)\n", fails);
         return 1;
