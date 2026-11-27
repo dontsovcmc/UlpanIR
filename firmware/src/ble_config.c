@@ -114,7 +114,7 @@ static bStatus_t write_cb(uint16_t conn, gattAttribute_t *a, uint8_t *val, uint1
         }
         LOG("ble: test %c frame 0x%X/0x%02X", val[0] ? 'B' : 'A', code.address, code.command);
         nec_encode(code.address, code.command, code.extended, &test_frame);
-        ir_tx_start(&test_frame);
+        ir_tx_start(&test_frame, true);
         return SUCCESS;
     }
     return ATT_ERR_ATTR_NOT_FOUND;

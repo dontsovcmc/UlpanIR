@@ -28,51 +28,38 @@ static void test_period(void) {
 
 static void test_assigned(void) {
     settings_t s = configured();
-    dispatch_t d;
-    dispatch_reset(&d);
-    out_t o = dispatch_action(&d, &s, (action_t){ACT_SEND_FRAME, BTN_A});
+    out_t o = dispatch_action(&s, (action_t){ACT_SEND_FRAME, BTN_A});
     CHECK(o.kind == OUT_FRAME && o.code.address == 0x32 && o.code.command == 0x02 && !o.code.extended);
-    o = dispatch_action(&d, &s, (action_t){ACT_SEND_FRAME, BTN_B});
+    o = dispatch_action(&s, (action_t){ACT_SEND_FRAME, BTN_B});
     CHECK(o.kind == OUT_FRAME && o.code.address == 0x1234 && o.code.extended);
-    o = dispatch_action(&d, &s, (action_t){ACT_SEND_REPEAT, BTN_B});
+    o = dispatch_action(&s, (action_t){ACT_SEND_REPEAT, BTN_B});
     CHECK(o.kind == OUT_REPEAT);
-    o = dispatch_action(&d, &s, (action_t){ACT_NONE, BTN_NONE});
+    o = dispatch_action(&s, (action_t){ACT_NONE, BTN_NONE});
     CHECK(o.kind == OUT_NONE);
 }
 
-static void test_unassigned_blinks_once_per_press(void) {
+static void test_unassigned_blinks_per_frame(void) {
     settings_t s;
     settings_defaults(&s); /* clean board: nothing assigned */
-    dispatch_t d;
-    dispatch_reset(&d);
-    out_t o = dispatch_action(&d, &s, (action_t){ACT_SEND_FRAME, BTN_A});
-    CHECK(o.kind == OUT_UNASSIGNED);
-    /* repeats while held: no IR, no second blink series */
-    o = dispatch_action(&d, &s, (action_t){ACT_SEND_FRAME, BTN_A});
-    CHECK(o.kind == OUT_NONE);
-    o = dispatch_action(&d, &s, (action_t){ACT_SEND_REPEAT, BTN_A});
-    CHECK(o.kind == OUT_NONE);
-    /* released: the next press blinks again */
-    dispatch_released(&d);
-    o = dispatch_action(&d, &s, (action_t){ACT_SEND_FRAME, BTN_A});
-    CHECK(o.kind == OUT_UNASSIGNED);
+    /* every would-be frame gives one blink and no IR: a 100 ms press blinks once, holding blinks at the repeat rate */
+    CHECK(dispatch_action(&s, (action_t){ACT_SEND_FRAME, BTN_A}).kind == OUT_UNASSIGNED);
+    CHECK(dispatch_action(&s, (action_t){ACT_SEND_FRAME, BTN_A}).kind == OUT_UNASSIGNED);
+    CHECK(dispatch_action(&s, (action_t){ACT_SEND_REPEAT, BTN_A}).kind == OUT_UNASSIGNED);
+    CHECK(dispatch_action(&s, (action_t){ACT_NONE, BTN_NONE}).kind == OUT_NONE);
 }
 
 static void test_only_one_assigned(void) {
     settings_t s;
     settings_defaults(&s);
     s.a = (button_code_t){true, false, 0x10, 0x20};
-    dispatch_t d;
-    dispatch_reset(&d);
-    CHECK(dispatch_action(&d, &s, (action_t){ACT_SEND_FRAME, BTN_B}).kind == OUT_UNASSIGNED);
-    dispatch_released(&d);
-    CHECK(dispatch_action(&d, &s, (action_t){ACT_SEND_FRAME, BTN_A}).kind == OUT_FRAME);
+    CHECK(dispatch_action(&s, (action_t){ACT_SEND_FRAME, BTN_B}).kind == OUT_UNASSIGNED);
+    CHECK(dispatch_action(&s, (action_t){ACT_SEND_FRAME, BTN_A}).kind == OUT_FRAME);
 }
 
 int main(void) {
     test_period();
     test_assigned();
-    test_unassigned_blinks_once_per_press();
+    test_unassigned_blinks_per_frame();
     test_only_one_assigned();
     if (fails) {
         printf("test_dispatch: %d failure(s)\n", fails);

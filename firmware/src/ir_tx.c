@@ -5,10 +5,10 @@
 
 static uint32_t seg_ticks[NEC_MAX_DURATIONS];
 static volatile uint8_t seg_count, seg_idx;
-static volatile bool busy;
+static volatile bool busy, emit_ir;
 
 static inline void carrier(bool on) {
-    if (on) TMR1_PWMEnable(); else TMR1_PWMDisable(); /* disabled: pin falls back to GPIO low */
+    if (on && emit_ir) TMR1_PWMEnable(); else TMR1_PWMDisable(); /* disabled: pin falls back to GPIO low */
 }
 
 void ir_tx_init(void) {
@@ -39,8 +39,9 @@ void ir_tx_stop(void) {
     PFIC_EnableIRQ(TMR0_IRQn);
 }
 
-bool ir_tx_start(const nec_frame_t *f) {
+bool ir_tx_start(const nec_frame_t *f, bool emit) {
     if (busy || f == 0 || f->count == 0) return false;
+    emit_ir = emit;
     for (uint8_t i = 0; i < f->count; i++) seg_ticks[i] = ir_half_us_to_ticks(FREQ_SYS, f->half_us[i]);
     seg_count = f->count;
     seg_idx = 0;
