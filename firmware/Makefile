@@ -36,7 +36,7 @@ LDFLAGS = $(ARCH) -T $(SDK)/Ld/Link.ld -nostartfiles -Wl,--gc-sections -Wl,-Map=
           --specs=nano.specs --specs=nosys.specs -L$(SDK)/StdPeriphDriver -Wl,--print-memory-usage
 
 ifeq ($(APP),remote)
-APP_SRC = src/main.c src/nec.c src/remote.c src/ir_timing.c src/ir_tx.c src/settings.c src/settings_store.c src/dispatch.c src/proto.c src/ble_config.c src/log.c
+APP_SRC = src/main.c src/nec.c src/remote.c src/ir_timing.c src/ir_tx.c src/settings.c src/settings_store.c src/dispatch.c src/proto.c src/ble_config.c src/log.c src/battery.c src/power.c
 else ifeq ($(APP),blink)
 APP_SRC = src/blink.c
 else

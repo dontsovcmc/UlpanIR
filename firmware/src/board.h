@@ -52,6 +52,15 @@ static inline void led_set(int on) {
     if ((on != 0) == (LED_ACTIVE_HIGH != 0)) PIN_SET(LED_PORT_B, LED_PIN); else PIN_CLR(LED_PORT_B, LED_PIN);
 }
 static inline int btn_a_down(void) { return !PIN_READ(BTN_A_PORT_B, BTN_A_PIN); }
+/* Power latch: 1 keeps the board powered, 0 releases it (the board goes dark unless a button is down).
+ * No-op on the dev board. */
+static inline void power_hold(int on) {
+#if HAS_HOLD
+    if (on) GPIOA_SetBits(HOLD_PIN); else GPIOA_ResetBits(HOLD_PIN);
+#else
+    (void)on;
+#endif
+}
 static inline int btn_b_down(void) { return !PIN_READ(BTN_B_PORT_B, BTN_B_PIN); }
 
 static inline void board_init(void) {

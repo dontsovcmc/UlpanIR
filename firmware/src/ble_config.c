@@ -2,6 +2,7 @@
  * Entered from main when both buttons are held 4 s; never returns: on 60 s without commands the remote
  * switches off (our board: power latch released) or resets (dev board: advertising stops, radio off). */
 #include "ble_config.h"
+#include "battery.h"
 #include "HAL.h"
 #include "board.h"
 #include "config.h"
@@ -201,19 +202,6 @@ static tmosEvents process_event(tmosTaskID id, tmosEvents events) {
     return 0;
 }
 
-static uint16_t measure_battery_mv(void) {
-    ADC_InterBATSampInit();
-    signed short calib = ADC_DataCalib_Rough(); /* restores channel and gain itself */
-    (void)ADC_ExcutSingleConver(); /* first conversion is discarded, as in WCH HAL/BAT.c */
-    uint32_t sum = 0;
-    for (int i = 0; i < 8; i++) {
-        int v = (int)ADC_ExcutSingleConver() + calib;
-        sum += v > 0 ? (uint32_t)v : 0;
-    }
-    R8_ADC_CFG &= ~RB_ADC_POWER_ON;
-    return proto_vbat_mv((uint16_t)(sum / 8));
-}
-
 __HIGH_CODE __attribute__((noinline, noreturn)) static void loop(void) {
     for (;;) TMOS_SystemProcess();
 }
@@ -236,7 +224,7 @@ static void log_diagnostics(void) {
 
 void ble_config_run(settings_t *settings) {
     work = settings;
-    battery_mv = measure_battery_mv(); /* before the radio starts: no RF load on the battery */
+    battery_mv = battery_measure_mv(); /* before the radio starts: no RF load on the battery */
     log_diagnostics();
 
     proto_uuid(PROTO_UUID_SERVICE, uuid_service);

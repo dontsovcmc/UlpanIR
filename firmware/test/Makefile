@@ -1,7 +1,7 @@
 # Host unit tests (clang/gcc on the development machine, no hardware).
 CC ?= cc
 CFLAGS = -std=c11 -Wall -Wextra -Werror -O1 -I../src -fsanitize=address,undefined
-TESTS = test_nec test_ir_timing test_remote test_settings test_dispatch test_proto
+TESTS = test_nec test_ir_timing test_remote test_settings test_dispatch test_proto test_power
 
 all: $(TESTS)
 	@for t in $(TESTS); do ./$$t || exit 1; done
@@ -18,6 +18,8 @@ test_dispatch: test_dispatch.c ../src/dispatch.c ../src/dispatch.h ../src/settin
 	$(CC) $(CFLAGS) -o $@ test_dispatch.c ../src/dispatch.c ../src/settings.c
 test_proto: test_proto.c ../src/proto.c ../src/proto.h ../src/settings.c ../src/settings.h ../src/config.h
 	$(CC) $(CFLAGS) -o $@ test_proto.c ../src/proto.c ../src/settings.c
+test_power: test_power.c ../src/power.c ../src/power.h
+	$(CC) $(CFLAGS) -o $@ test_power.c ../src/power.c
 
 clean:
 	rm -f $(TESTS)
