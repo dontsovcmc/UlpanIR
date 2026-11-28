@@ -48,7 +48,11 @@ UART снята (design §7, гипотеза).
 
 При отказе `#chip`:
 1. `wlink status` с WCH-LinkE на той же плате. Если LinkE тоже не видит — 2-проводная отладка на чипе выключена
-   (риск `add-board-hardware` 4.1).
+   (риск `add-board-hardware` 4.1). Тогда — загрузчик:
+   - TP_BOOT на GND, питание на плату;
+   - `wchisp --serial` через J1.8/J1.9;
+   - `wchisp config`, чтобы вернуть `CFG_DEBUG_EN`;
+   - порядок — `hardware/README.md` §1.
 2. Если LinkE видит — увеличить полупериоды в `SetProtocolSpeed` (`src/port/bitbang_rvswd_c6.h`) в 4 раза и
    повторить.
 3. Результат — в design Risks.
