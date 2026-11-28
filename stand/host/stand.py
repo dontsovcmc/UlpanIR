@@ -7,9 +7,12 @@
 Стенд знает только команды `#…` (stand/README.md); сценарий, коды и допуски живут здесь (design §10).
 
     uv run stand/host/stand.py [--port P] flash <bin>   прошить образ
-    uv run stand/host/stand.py [--port P] test          проверить уже прошитую плату (настройки стираются)
-    uv run stand/host/stand.py [--port P] run <bin>     прошить, стереть настройки, проверить
+    uv run stand/host/stand.py [--port P] test [--long]        проверить уже прошитую плату (настройки стираются)
+    uv run stand/host/stand.py [--port P] run [--long] <bin>   прошить, стереть настройки, проверить
     uv run stand/host/stand.py [--port P] monitor [#команда ...]   вывести порт как есть
+
+--long — долгий тест: проверка 6 ждёт, пока режим настройки погаснет сам (60 с). Без него проверка 6 пропущена,
+режим настройки гасится перезапуском чипа по отладке (`#chip`), сценарий идёт около 30 с (оценка).
 
 Код возврата: 0 — ГОДНА (или команда выполнена), 1 — БРАК или ошибка, 2 — стенд не найден.
 """
@@ -156,6 +159,11 @@ class Check:
     name: str
     ok: bool
     value: str
+    skipped: bool = False
+
+    @property
+    def mark(self) -> str:
+        return "пропущена" if self.skipped else ("да" if self.ok else "нет")
 
 
 @dataclass
@@ -165,7 +173,7 @@ class Result:
 
     @property
     def failed(self) -> list[int]:
-        return [c.num for c in self.checks if not c.ok]
+        return [c.num for c in self.checks if not c.ok and not c.skipped]
 
     def verdict(self) -> str:
         return "ГОДНА" if not self.failed else "БРАК: " + " ".join(map(str, self.failed))
@@ -186,13 +194,14 @@ NAMES = {
 
 
 class Scenario:
-    def __init__(self, link: Link, image: bytes | None):
+    def __init__(self, link: Link, image: bytes | None, long: bool = False):
         self.l = link
         self.image = image
+        self.long = long
         self.r = Result()
 
-    def add(self, num: int, ok: bool, value: str) -> None:
-        self.r.checks.append(Check(num, NAMES[num], ok, value))
+    def add(self, num: int, ok: bool, value: str, skipped: bool = False) -> None:
+        self.r.checks.append(Check(num, NAMES[num], ok, value, skipped))
 
     # --- измерения
 
@@ -288,8 +297,15 @@ class Scenario:
         self.add(5, ok, f"{con[7:]}; {w[7:]}; {rd[7:]}")
 
     def c6(self):
-        ok, val = self.power_off_within(CONFIG_TIMEOUT_S)
-        self.add(6, ok, val)
+        if self.long:
+            ok, val = self.power_off_within(CONFIG_TIMEOUT_S)
+            return self.add(6, ok, val)
+        # Короткий тест: не ждать 60 с, а перезапустить МК по отладке — режим настройки кончается, пульт гаснет.
+        chip = self.l.call("#chip", "chip:")
+        off, val = self.power_off_within(OFF_AFTER_RELEASE_S)
+        if off:
+            return self.add(6, True, f"без --long; погашен перезапуском `#chip`, {val}", skipped=True)
+        self.add(6, False, f"после перезапуска `#chip` не выключился: {chip[2:]}; {val}")
 
     def c7(self):
         frames, _ = self.press("a", 100)
@@ -323,7 +339,7 @@ def fmt(codes) -> str:
 
 
 def report_text(res: Result, lines: list[Line]) -> str:
-    out = [f"{c.num}. {c.name}: {'да' if c.ok else 'нет'} — {c.value}" for c in res.checks]
+    out = [f"{c.num}. {c.name}: {c.mark} — {c.value}" for c in res.checks]
     out.append(res.verdict())
     out.append("")
     out.append("--- порт стенда ---")
@@ -339,10 +355,10 @@ def save_report(res: Result, lines: list[Line], when: dt.datetime | None = None,
     return path
 
 
-def run_checks(link: Link, image: bytes | None, out=print, folder: Path = REPORTS) -> int:
-    res = Scenario(link, image).run()
+def run_checks(link: Link, image: bytes | None, out=print, folder: Path = REPORTS, long: bool = False) -> int:
+    res = Scenario(link, image, long).run()
     for c in res.checks:
-        out(f"{c.num:2}. {c.name}: {'да ' if c.ok else 'нет'} — {c.value}")
+        out(f"{c.num:2}. {c.name}: {c.mark if c.skipped else c.mark.ljust(3)} — {c.value}")
     out(res.verdict())
     path = save_report(res, link.lines, folder=folder)
     out(f"Протокол: {path}")
@@ -359,8 +375,12 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("-v", "--verbose", action="store_true", help="печатать весь поток порта")
     sub = ap.add_subparsers(dest="cmd", required=True)
     sub.add_parser("flash").add_argument("bin", type=Path)
-    sub.add_parser("test")
-    sub.add_parser("run").add_argument("bin", type=Path)
+    long = argparse.ArgumentParser(add_help=False)
+    long.add_argument(
+        "--long", action="store_true", help="долгий тест: ждать, пока режим настройки погаснет сам (60 с)"
+    )
+    sub.add_parser("test", parents=[long])
+    sub.add_parser("run", parents=[long]).add_argument("bin", type=Path)
     mon = sub.add_parser("monitor")
     mon.add_argument("commands", nargs="*", help="команды стенда, например '#info'")
     a = ap.parse_args(argv)
@@ -383,7 +403,7 @@ def main(argv: list[str] | None = None) -> int:
             ans = link.flash(image)
             print(ans)
             return 0 if ans.startswith("# flash: записано") else 1
-        return run_checks(link, image)
+        return run_checks(link, image, long=a.long)
     except KeyboardInterrupt:
         return 0
     except StandError as e:

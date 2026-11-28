@@ -8,6 +8,7 @@
 #   make flash-link           -> WCH-LinkE over SWD (wlink)
 #   make stand-flash          -> test stand on ESP32-C6 (../stand), RVSWD through header J1
 #   make stand                -> stand: flash, erase settings, run the board checks (GOOD / REJECT)
+#   make stand LONG=1         -> the same, plus check 6: wait for config mode to time out by itself (60 s)
 TOOLCHAIN ?= $(HOME)/tools/xpack-riscv-none-elf-gcc-15.2.0-1/bin/riscv-none-elf-
 WCHISP    ?= $(HOME)/tools/bin/wchisp-macos-arm64/wchisp
 WLINK     ?= $(HOME)/tools/bin/wlink-macos-arm64/wlink
@@ -96,7 +97,7 @@ STAND = uv run ../stand/host/stand.py
 stand-flash: $(OUT).bin
 	$(STAND) flash $(OUT).bin
 stand: $(OUT).bin
-	$(STAND) run $(OUT).bin
+	$(STAND) run $(if $(LONG),--long) $(OUT).bin
 
 clean:
 	rm -rf build

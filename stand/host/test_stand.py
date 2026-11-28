@@ -31,9 +31,12 @@ class FakeTime:
 
 class FakeStand:
     """Модель стенда с платой. Параметры порчи: frames_long — кадров на `#press a 2000`, stuck_on — пульт
-    не выключается начиная с этого `#press`, ir_blocked — ИК не доходит до приёмника."""
+    не выключается начиная с этого `#press`, ir_blocked — ИК не доходит до приёмника, reset_off=False — перезапуск
+    по отладке (`#chip`) не выключает пульт."""
 
-    def __init__(self, tm: FakeTime, frames_long: int = 7, stuck_on_press: int | None = None, ir_blocked=False):
+    def __init__(
+        self, tm: FakeTime, frames_long: int = 7, stuck_on_press: int | None = None, ir_blocked=False, reset_off=True
+    ):
         self.tm = tm
         self.out: list[tuple[float, bytes]] = []
         self.inbuf = b""
@@ -48,6 +51,8 @@ class FakeStand:
         self.stuck_on_press = stuck_on_press
         self.ir_blocked = ir_blocked
         self.ble = False
+        self.reset_off = reset_off
+        self.chip_calls: list[float] = []
 
     # --- транспорт
 
@@ -88,7 +93,11 @@ class FakeStand:
         w = line.split()
         name = w[0]
         if name == "#chip":
+            # Сеанс держит A ~0,4 с, затем перезапуск МК: режим настройки кончается, пульт гаснет после отпускания.
+            self.chip_calls.append(self.tm.now)
             self.emit(0.4, "# chip: CH59x uid=0011223344556677")
+            self.config_mode = False
+            self.off_at = self.tm.now + 0.43 if self.reset_off else 1e9
         elif name == "#flash":
             self.flash_len = self.binary_left = int(w[1])
         elif name == "#erase":
@@ -147,18 +156,18 @@ class FakeStand:
             self.emit(0.05, "# ble: отключён")
 
 
-def scenario(tmp_path, image=b"\x01" * 1000, **kw):
+def scenario(tmp_path, image=b"\x01" * 1000, long=False, **kw):
     tm = FakeTime()
     fake = FakeStand(tm, **kw)
     link = stand.Link(fake, clock=tm.clock, sleep=tm.sleep)
     out: list[str] = []
-    code = stand.run_checks(link, image, out=out.append, folder=tmp_path)
+    code = stand.run_checks(link, image, out=out.append, folder=tmp_path, long=long)
     return code, out, fake, tm
 
 
-def test_healthy_board(tmp_path):
-    """«Исправная плата» на записанных строках: все 10 проверок — да, ГОДНА, код 0, протокол сохранён."""
-    code, out, _, tm = scenario(tmp_path)
+def test_healthy_board_long(tmp_path):
+    """«Исправная плата», долгий тест: все 10 проверок — да, ГОДНА, код 0, протокол сохранён."""
+    code, out, _, tm = scenario(tmp_path, long=True)
     assert code == 0, "\n".join(out)
     assert out[10] == "ГОДНА"
     assert all(" да " in s for s in out[:10]), "\n".join(out)
@@ -166,7 +175,26 @@ def test_healthy_board(tmp_path):
     assert len(reports) == 1
     text = reports[0].read_text(encoding="utf-8")
     assert "ГОДНА" in text and "-> config mode" in text and "# ir: nec 0x32 0x02" in text
-    assert tm.now < 200  # с 60-секундным режимом настройки укладывается в ~2 мин
+    assert 60 < tm.now < 200  # ждёт, пока режим настройки погаснет сам (60 с)
+
+
+def test_healthy_board_short_skips_6(tmp_path):
+    """Без долгого теста проверка 6 пропущена, режим настройки гасится перезапуском `#chip`; ГОДНА за полминуты."""
+    code, out, fake, tm = scenario(tmp_path)
+    assert code == 0, "\n".join(out)
+    assert out[10] == "ГОДНА"
+    assert out[5].startswith(" 6.") and "пропущена" in out[5], out[5]
+    assert all(" да " in s for i, s in enumerate(out[:10]) if i != 5), "\n".join(out)
+    assert len(fake.chip_calls) == 2  # проверка 1 и выход из режима настройки
+    assert tm.now < 30
+
+
+def test_short_reset_does_not_switch_off_is_brak_6(tmp_path):
+    """Без долгого теста: перезапуск по отладке не выключил пульт — проверка 6 «нет», дальше по сценарию."""
+    code, out, _, _ = scenario(tmp_path, reset_off=False)
+    assert code == 1
+    assert out[5].startswith(" 6.") and " нет " in out[5] and "перезапуск" in out[5], out[5]
+    assert out[10].startswith("БРАК: ") and "6" in out[10].split()
 
 
 def test_fake_stand_four_frames_is_brak_9(tmp_path):
