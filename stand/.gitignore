@@ -1,0 +1,5 @@
+.pio/
+reports/
+host/__pycache__/
+host/.pytest_cache/
+.pytest_cache/

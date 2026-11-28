@@ -6,6 +6,8 @@
 #   make test                 -> host unit tests (no hardware)
 #   make flash-isp            -> USB bootloader (wchisp), board held in BOOT
 #   make flash-link           -> WCH-LinkE over SWD (wlink)
+#   make stand-flash          -> test stand on ESP32-C6 (../stand), RVSWD through header J1
+#   make stand                -> stand: flash, erase settings, run the board checks (GOOD / REJECT)
 TOOLCHAIN ?= $(HOME)/tools/xpack-riscv-none-elf-gcc-15.2.0-1/bin/riscv-none-elf-
 WCHISP    ?= $(HOME)/tools/bin/wchisp-macos-arm64/wchisp
 WLINK     ?= $(HOME)/tools/bin/wlink-macos-arm64/wlink
@@ -90,7 +92,13 @@ flash-isp: $(OUT).bin
 flash-link: $(OUT).bin
 	$(WLINK) flash $(OUT).bin
 
+STAND = uv run ../stand/host/stand.py
+stand-flash: $(OUT).bin
+	$(STAND) flash $(OUT).bin
+stand: $(OUT).bin
+	$(STAND) run $(OUT).bin
+
 clean:
 	rm -rf build
 	$(MAKE) -C test clean
-.PHONY: all test flash-isp flash-link clean
+.PHONY: all test flash-isp flash-link stand-flash stand clean

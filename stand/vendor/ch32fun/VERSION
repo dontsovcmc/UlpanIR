@@ -1,0 +1,5 @@
+https://github.com/cnlohr/ch32fun
+commit a824204656710662c4cafcd716d2b484579260ec (2026-11-17)
+Взяты без правок: minichlink/funprog/funprog_rvswdio.h, funprog_ch5xx.h, funprog_ch5xx.c, README.md; LICENSE (MIT).
+Свои файлы порта (настройки, задержки, биты RVSWD под ESP32-C6) — stand/src/port/funprog_*.h, bitbang_rvswd_c6.h.
+Обновлять вручную: скопировать те же файлы из нового коммита, записать его сюда, прогнать сборку esp32c6.
