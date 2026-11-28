@@ -1,9 +1,10 @@
-# Publishes the configuration page (web/) to GitHub Pages on every push to main that touches it.
+# Publishes web/ to GitHub Pages on every push to main that touches it: the configuration page and the stand
+# flashing page web/stand/ with the stand image built by PlatformIO (make -C stand web).
 name: pages
 on:
   push:
     branches: [main]
-    paths: ['web/**', '.github/workflows/pages.yml']
+    paths: ['web/**', 'stand/src/**', 'stand/vendor/**', 'stand/platformio.ini', 'stand/Makefile', '.github/workflows/pages.yml']
   workflow_dispatch:
 permissions:
   contents: read
@@ -24,6 +25,15 @@ jobs:
         with:
           node-version: 22
       - run: node --test web/test/protocol.test.mjs
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/cache@v4
+        with:
+          path: ~/.platformio
+          key: pio-${{ hashFiles('stand/platformio.ini') }}
+      - run: pip install platformio==6.2.0
+      - run: make -C stand web PIO=pio
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:

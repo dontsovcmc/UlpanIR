@@ -1,5 +1,7 @@
 # Страница настройки пульта
 
+Рядом — `stand/index.html`: прошивка стенда (ESP32-C6) из браузера, см. `stand/README.md`.
+
 `index.html` + `protocol.js` — статическая страница без сборки: Web Bluetooth в Chrome и Edge
 (Windows, macOS, Linux, Android). Протокол — `docs/ble_protocol.md`, требования —
 `openspec/changes/add-remote-config/specs/remote-config/spec.md`.

@@ -6,6 +6,7 @@
 #   make test                 -> host unit tests (no hardware)
 #   make flash-isp            -> USB bootloader (wchisp), board held in BOOT
 #   make flash-link           -> WCH-LinkE over SWD (wlink)
+#   make stand-fw             -> build the stand firmware with PlatformIO and flash the ESP32-C6 Super Mini over USB
 #   make stand-flash          -> test stand on ESP32-C6 (../stand), RVSWD through header J1
 #   make stand                -> stand: flash, erase settings, run the board checks (GOOD / REJECT)
 #   make stand LONG=1         -> the same, plus check 6: wait for config mode to time out by itself (60 s)
@@ -94,6 +95,8 @@ flash-link: $(OUT).bin
 	$(WLINK) flash $(OUT).bin
 
 STAND = uv run ../stand/host/stand.py
+stand-fw:
+	$(MAKE) -C ../stand flash
 stand-flash: $(OUT).bin
 	$(STAND) flash $(OUT).bin
 stand: $(OUT).bin
@@ -102,4 +105,4 @@ stand: $(OUT).bin
 clean:
 	rm -rf build
 	$(MAKE) -C test clean
-.PHONY: all test flash-isp flash-link stand-flash stand clean
+.PHONY: all test flash-isp flash-link stand-fw stand-flash stand clean

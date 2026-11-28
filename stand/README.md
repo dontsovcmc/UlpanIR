@@ -133,16 +133,27 @@ uv run stand/host/stand.py monitor '#info'   # вывести порт как е
 
 ## Сборка и прошивка самого стенда
 
-PlatformIO (`~/.platformio/penv/bin/pio`), платформа pioarduino 55.03.312-1 (ядро Arduino-ESP32 3.3.12), как у
-waterius_flasher.
+PlatformIO (`~/.platformio/penv/bin/pio` или `pio` из PATH), платформа pioarduino 55.03.312-1 (ядро Arduino-ESP32
+3.3.12), как у waterius_flasher. Команды — `stand/Makefile`:
 
 ```sh
-cd stand
-pio test -e native            # тесты core/ на Mac
-pio run -e esp32c6            # сборка
-pio run -e esp32c6 -t upload  # прошить Super Mini по USB; если не входит в загрузчик — держать BOOT при подключении
-uv run --with pytest --with pyserial pytest host   # тест скрипта на поддельном стенде
+make -C stand flash   # собрать и прошить Super Mini по USB (pio run -e esp32c6 -t upload)
+make -C stand build   # только собрать: .pio/build/esp32c6/firmware.factory.bin — один образ с адреса 0x0
+make -C stand test    # тесты core/ на Mac (pio test -e native) и скрипта на поддельном стенде
+make -C stand web     # образ и manifest.json для страницы: web/stand/firmware/ (не в git)
+make -C stand serve   # страница прошивки локально: http://127.0.0.1:8000/stand/
 ```
+
+Из `firmware/` то же самое — `make stand-fw`.
+
+**Из браузера** — страница `web/stand/index.html` (ESP Web Tools 10.4.0, Chrome или Edge):
+<https://dontsovcmc.github.io/UlpanIR/stand/>. GitHub Pages собирает образ PlatformIO при каждом пуше в `stand/src`,
+`stand/vendor`, `platformio.ini` или `Makefile` (`.github/workflows/pages.yml`). Там же ссылка на готовый
+`ulpanir_stand-esp32c6.bin` для `esptool --chip esp32c6 write-flash 0x0 …`.
+
+**BOOT.** Если на Super Mini уже прошивка стенда, перед прошивкой зажать BOOT, вставить USB, отпустить: стенд
+выключает сброс по USB (`USB_SERIAL_JTAG_USB_UART_CHIP_RST_DIS`), чтобы открытие порта его не перезапускало.
+Гипотеза: без BOOT ни `pio upload`, ни страница в загрузчик не войдут.
 
 ## Как устроено
 

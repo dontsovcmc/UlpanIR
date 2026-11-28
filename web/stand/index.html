@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Прошивка стенда UlpanIR</title>
+<link rel="icon" href="data:,">
+<!-- Прошивка из браузера — ESP Web Tools (Web Serial + esptool-js). Образ и manifest.json кладёт `make -C stand web`,
+     на GitHub Pages — сборка PlatformIO в .github/workflows/pages.yml. -->
+<script type="module" src="https://unpkg.com/esp-web-tools@10.4.0/dist/web/install-button.js?module"></script>
+<style>
+  :root {
+    --bg: #f6f7f9; --card: #ffffff; --text: #1b1f24; --muted: #5b6573; --line: #d8dde4;
+    --accent: #1f6feb; --accent-text: #ffffff; --err: #c62828; --warn-bg: #fff4d6;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #111418; --card: #1a1f25; --text: #e6e9ed; --muted: #9aa4b1; --line: #2e3540;
+      --accent: #4c8dff; --accent-text: #0b0e12; --err: #ff6b6b; --warn-bg: #3a3015;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  main { max-width: 760px; margin: 0 auto; padding: 16px; }
+  h1 { font-size: 1.4rem; margin: 8px 0 4px; }
+  h2 { font-size: 1.05rem; margin: 0 0 12px; }
+  .lead { color: var(--muted); margin: 0 0 16px; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 16px; margin-bottom: 16px; }
+  ol { margin: 0; padding-left: 1.3em; }
+  li { margin: 0 0 10px; }
+  code, pre { font-family: ui-monospace, Menlo, monospace; font-size: .9em; }
+  pre { background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 10px; overflow-x: auto; margin: 6px 0 12px; }
+  a { color: var(--accent); }
+  button {
+    font: inherit; padding: 10px 20px; border-radius: 6px; border: 1px solid var(--accent);
+    background: var(--accent); color: var(--accent-text); cursor: pointer;
+  }
+  .row { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; margin-top: 8px; }
+  .muted { color: var(--muted); font-size: .9rem; }
+  .warn { background: var(--warn-bg); border-radius: 6px; padding: 10px 12px; }
+  .err { color: var(--err); }
+</style>
+</head>
+<body>
+<main>
+  <h1>Прошивка стенда UlpanIR</h1>
+  <p class="lead">ESP32-C6 Super Mini становится стендом: шьёт CH592F на плате пульта через гребёнку J1 и проверяет плату.
+    Прошивка стенда заливается в Super Mini один раз, из браузера.</p>
+
+  <section class="card">
+    <h2>Прошить из браузера</h2>
+    <ol>
+      <li>Chrome или Edge на компьютере (нужен Web Serial; Safari и Firefox его не умеют).</li>
+      <li>Зажать <b>BOOT</b> на Super Mini, вставить USB, отпустить <b>BOOT</b>.
+        <div class="muted">Для новой платы можно без BOOT. Если на плате уже прошивка стенда — только так: стенд
+          отключает сброс по USB, чтобы открытие порта его не перезапускало.</div></li>
+      <li>Нажать «Прошить», выбрать порт платы (<code>USB JTAG/serial debug unit</code>) → <b>Install</b>.
+        <div class="row">
+          <esp-web-install-button id="install">
+            <button slot="activate">Прошить</button>
+            <span slot="unsupported" class="err">Браузер не умеет Web Serial — нужен Chrome или Edge на компьютере.</span>
+            <span slot="not-allowed" class="err">Web Serial работает только по https или с localhost.</span>
+          </esp-web-install-button>
+          <span id="version" class="muted"></span>
+        </div>
+        <p id="no-image" class="warn" hidden>Образа рядом со страницей нет. Собрать и положить:
+          <code>make -C stand web</code>, страница локально — <code>make -C stand serve</code>.</p></li>
+      <li>Вынуть и вставить USB — появится порт стенда. Проверка:
+        <pre>uv run stand/host/stand.py monitor '#info'</pre>
+        Ответ — <code># ulpanir_stand &lt;версия&gt; uptime=…</code>.</li>
+    </ol>
+  </section>
+
+  <section class="card">
+    <h2>Или из консоли</h2>
+    <p>Собрать PlatformIO и прошить (порт найдётся сам):</p>
+    <pre>make -C stand flash</pre>
+    <p>Готовым образом — один файл с адреса 0x0:</p>
+    <pre>esptool --chip esp32c6 write-flash 0x0 ulpanir_stand-esp32c6.bin</pre>
+    <p class="muted"><a id="download" href="firmware/ulpanir_stand-esp32c6.bin" download>Скачать ulpanir_stand-esp32c6.bin</a></p>
+  </section>
+
+  <section class="card">
+    <h2>Дальше</h2>
+    <p>Проводка Super Mini → J1 пульта и команды стенда — в
+      <a href="https://github.com/dontsovcmc/UlpanIR/blob/main/stand/README.md">stand/README.md</a>.
+      Прошить и проверить плату пульта: <code>make stand</code> в <code>firmware/</code>.</p>
+  </section>
+</main>
+<script type="module">
+  const btn = document.getElementById('install');
+  try {
+    const r = await fetch('firmware/manifest.json', { cache: 'no-store' });
+    if (!r.ok) throw new Error(String(r.status));
+    const m = await r.json();
+    btn.setAttribute('manifest', 'firmware/manifest.json');
+    document.getElementById('version').textContent = `версия ${m.version}`;
+  } catch {
+    btn.hidden = true;
+    document.getElementById('no-image').hidden = false;
+    document.getElementById('download').parentElement.hidden = true;
+  }
+</script>
+</body>
+</html>

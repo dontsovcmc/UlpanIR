@@ -151,8 +151,10 @@ ESP32-C6 Super Mini шьёт плату через гребёнку J1 по 2-п
 вынуть, проводка — таблица в `stand/README.md`.
 
 ```sh
-make stand-flash   # только прошить: uv run ../stand/host/stand.py flash build/ulpanir/remote.bin
+make stand-fw      # один раз: собрать стенд PlatformIO и прошить Super Mini (или страница web/stand/ из браузера)
+make stand-flash   # только прошить пульт: uv run ../stand/host/stand.py flash build/ulpanir/remote.bin
 make stand         # прошить, стереть настройки, 10 проверок → «ГОДНА» или «БРАК: <номера>», протокол в stand/reports/
+make stand LONG=1  # то же с проверкой 6: ждать, пока режим настройки погаснет сам (60 с)
 ```
 
 Не проверено на железе: Super Mini и плат пока нет (`stand/board-checks.md`). Если стенд не прошьёт —

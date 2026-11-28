@@ -1,0 +1,2 @@
+# образ стенда и manifest.json: собирает make -C stand web (на Pages — CI)
+stand/firmware/
